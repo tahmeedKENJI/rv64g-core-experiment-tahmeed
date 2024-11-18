@@ -158,21 +158,22 @@ module pipeline_tb;
 
   // Sequential block to trigger push only event
   always @(posedge clk_i iff arst_ni) begin
-    if ((data_in_valid_i & data_in_ready_o & ~data_out_valid_o) === 1) begin
+    if ((data_in_valid_i & data_in_ready_o & ~data_out_valid_o & ~clear_i) === 1) begin
       ->e_push_only;
     end
   end
 
   // Sequential block to trigger pop only event
   always @(posedge clk_i iff arst_ni) begin
-    if ((~data_in_valid_i & data_out_valid_o & data_out_ready_i) === 1) begin
+    if ((~data_in_valid_i & data_out_valid_o & data_out_ready_i & ~clear_i) === 1) begin
       ->e_pop_only;
     end
   end
 
   // Sequential block to trigger push and pop event
   always @(posedge clk_i iff arst_ni) begin
-    if ((data_in_valid_i & data_in_ready_o & data_out_valid_o & data_out_ready_i) === 1) begin
+    if ((data_in_valid_i & data_in_ready_o & data_out_valid_o & data_out_ready_i & ~clear_i) === 1)
+    begin
       ->e_push_pop;
     end
   end
