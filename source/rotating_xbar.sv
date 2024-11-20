@@ -7,6 +7,10 @@ among the outputs, making it useful in communication systems and digital designs
 flexible and dynamic data routing. The module leverages an instantiated crossbar switch (xbar) and
 calculates the selection indices dynamically to achieve the desired rotation.
 Author : Foez Ahmed (foez.official@gmail.com)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
 */
 
 module rotating_xbar #(

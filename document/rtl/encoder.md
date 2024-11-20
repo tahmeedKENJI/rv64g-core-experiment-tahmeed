@@ -12,6 +12,10 @@ multiple input wires. It encodes this position into an output index. This type o
 used in digital systems where it is necessary to identify which of several input signals is active
 and assign a corresponding binary code to that signal. This functionality is crucial for
 applications like priority encoders and resource arbitration.
+<br>**This file is part of DSInnovators:rv64g-core**
+<br>**Copyright (c) 2024 DSInnovators**
+<br>**Licensed under the MIT License**
+<br>**See LICENSE file in the project root for full license information**
 
 ## Parameters
 |Name|Type|Dimension|Default Value|Description|

@@ -71,6 +71,8 @@ test/$(TOP)/$(TOP).sv:
 	@cat submodules/sv-genesis/tb_model.sv \
 	| sed "s/Author : name (email)/Author : $(USER_NAME) ($(USER_EMAIL))/g" \
 	| sed "s/module tb_model;/module $(TOP);/g" \
+	| sed "s/squared-studio/DSInnovators/g" \
+	| sed "s/sv-genesis/rv64g-core/g" \
 	> test/$(TOP)/$(TOP).sv
 
 test/$(TOP)/xsim_$(CONFIG)_cfg:
@@ -84,6 +86,8 @@ source/$(RTL).sv:
 	@cat submodules/sv-genesis/rtl_model.sv \
 	| sed "s/Author : name (email)/Author : $(USER_NAME) ($(USER_EMAIL))/g" \
 	| sed "s/module rtl_model/module $(RTL)/g" \
+	| sed "s/squared-studio/DSInnovators/g" \
+	| sed "s/sv-genesis/rv64g-core/g" \
 	> source/$(RTL).sv
 
 #########################################################################################
@@ -142,6 +146,10 @@ gen_doc:
 	@echo "Creating document for $(FILE)"
 	@mkdir -p document/rtl
 	@python submodules/documenter/sv_documenter.py $(FILE) document/rtl
+	@sed -i "s/.*${LINE_1}.*/<br>**${LINE_1}**/g" ./document/rtl/$(shell basename $(FILE) | sed "s/\.sv/\.md/g")
+	@sed -i "s/.*${LINE_2}.*/<br>**${LINE_2}**/g" ./document/rtl/$(shell basename $(FILE) | sed "s/\.sv/\.md/g")
+	@sed -i "s/.*${LINE_3}.*/<br>**${LINE_3}**/g" ./document/rtl/$(shell basename $(FILE) | sed "s/\.sv/\.md/g")
+	@sed -i "s/.*${LINE_4}.*/<br>**${LINE_4}**/g" ./document/rtl/$(shell basename $(FILE) | sed "s/\.sv/\.md/g")
 	@echo "[\`$(shell basename $(FILE) | sed 's/\.sv//g')\`]($(shell basename $(FILE) | sed 's/\.sv//g').md)" >> document/rtl/modules.md
 
 .PHONY: update_doc_list
@@ -163,14 +171,15 @@ submodules/documenter/sv_documenter.py:
 print_logo:
 	@echo "";
 	@echo "";
-	@echo -e "\033[1;34m  _____   _____ _                             _                  \033[0m";
-	@echo -e "\033[1;34m |  __ \ / ____(_)                           | |     \033[0m\033[1;39m Since 2001 \033[0m";
-	@echo -e "\033[1;34m | |  | | (___  _ _ __  _ __   _____   ____ _| |_ ___  _ __ ___  \033[0m";
-	@echo -e "\033[1;34m | |  | |\___ \| | '_ \| '_ \ / _ \ \ / / _' | __/ _ \| '__/ __| \033[0m";
-	@echo -e "\033[1;34m | |__| |____) | | | | | | | | (_) \ V / (_| | || (_) | |  \__ \ \033[0m";
-	@echo -e "\033[1;34m |_____/|_____/|_|_| |_|_| |_|\___/ \_/ \__,_|\__\___/|_|  |___/ \033[0m";
-	@echo -e "\033[1;39m ______________ Dynamic Solution Innovators Ltd. _______________ \033[0m";
-	@echo "";
+	@echo -e "\033[1;34m  ____  ____ ___                             _      \033[0m\033[1;39m Since 2001 \033[0m";
+	@echo -e "\033[1;34m |  _ \/ ___|_ _|_ __  _ __   _____   ____ _| |_ ___  _ __ ___  \033[0m";
+	@echo -e "\033[1;34m | | | \___ \| || '_ \| '_ \ / _ \ \ / / _' | __/ _ \| '__/ __| \033[0m";
+	@echo -e "\033[1;34m | |_| |___) | || | | | | | | (_) \ V / (_| | || (_) | |  \__ \ \033[0m";
+	@echo -e "\033[1;34m |____/|____/___|_| |_|_| |_|\___/ \_/ \__,_|\__\___/|_|  |___/ \033[0m";
+	@echo -e "\033[1;39m ______________ Dynamic Solution Innovators Ltd. ______________ \033[0m";
+	@echo -e "";
+
+
 
 .PHONY: soft_clean
 soft_clean:
@@ -183,3 +192,26 @@ clean: soft_clean
 	@make -s log
 	@rm -rf $(shell find -name "temp_*")
 	@$(foreach word, $(shell cat .gitignore), rm -rf $(shell find $(shell realpath .) -name "$(word)");)
+
+LINE_1 := This file is part of DSInnovators:rv64g-core
+LINE_2 := Copyright (c) $(shell date +%Y) DSInnovators
+LINE_3 := Licensed under the MIT License
+LINE_4 := See LICENSE file in the project root for full license information
+
+.PHONY: copyright_check
+copyright_check:
+	@rm -rf temp_copyright_issues
+	@$(eval LIST := $(shell find -name "*.svh" | sed "s/\/.*submodules\/.*//g"))
+	@$(foreach file, $(LIST), $(call copyright_check_file,$(file));)
+	@$(eval LIST := $(shell find -name "*.sv" | sed "s/\/.*submodules\/.*//g"))
+	@$(foreach file, $(LIST), $(call copyright_check_file,$(file));)
+	@touch temp_copyright_issues
+	@cat temp_copyright_issues
+
+define copyright_check_file
+	(grep -ir "author" $(1) > /dev/null) || (echo "$(1) >> \"Author : Name (email)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_1)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_1)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_2)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_2)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_3)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_3)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_4)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_4)\"" >> temp_copyright_issues)
+endef

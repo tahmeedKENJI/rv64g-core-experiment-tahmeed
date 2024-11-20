@@ -6,6 +6,10 @@ data widths, supports asynchronous reset and synchronous clear signals, and inte
 a pipeline module to process the data while directing the output to multiple destinations.
 This allows for efficient and controlled data distribution in hardware designs.
 Author : Foez Ahmed (foez.official@gmail.com)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
 */
 
 module pipeline_split #(

@@ -3,6 +3,10 @@ The rv64g_regfile module is designed to implement a register file with 64 regist
 wide, for the RISC-V 64-bit architecture. This module supports locking and unlocking specific
 registers, making it suitable for operations that require controlled access to the registers.
 Author : Foez Ahmed (foez.official@gmail.com)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
 */
 
 module rv64g_regfile #(

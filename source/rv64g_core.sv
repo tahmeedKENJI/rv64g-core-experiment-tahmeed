@@ -9,6 +9,10 @@ essential for efficient processor operation. Here's a detailed description of it
 - **Interrupt Management**: Processes interrupt requests, determines the active interrupt, and
   acknowledges interrupts, ensuring timely and efficient interrupt handling.
 Author : Foez Ahmed (foez.official@gmail.com)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
 */
 
 module rv64g_core #(

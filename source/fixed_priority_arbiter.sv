@@ -6,6 +6,10 @@ certain tasks need to be prioritized over others to ensure efficient resource al
 performance. The module is parameterized to handle a configurable number of request signals,
 providing flexibility for various applications.
 Author : Foez Ahmed (foez.official@gmail.com)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
 */
 
 module fixed_priority_arbiter #(

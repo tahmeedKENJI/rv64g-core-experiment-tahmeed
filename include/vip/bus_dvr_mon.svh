@@ -1,4 +1,8 @@
-// ### Author : Foez Ahmed (foez.official@gmail.com)
+// Author : Foez Ahmed (foez.official@gmail.com)
+// This file is part of DSInnovators:rv64g-core
+// Copyright (c) 2024 DSInnovators
+// Licensed under the MIT License
+// See LICENSE file in the project root for full license information
 
 `ifndef BUS_DVR_MON_SVH
 `define BUS_DVR_MON_SVH 0

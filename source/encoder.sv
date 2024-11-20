@@ -5,6 +5,10 @@ used in digital systems where it is necessary to identify which of several input
 and assign a corresponding binary code to that signal. This functionality is crucial for
 applications like priority encoders and resource arbitration.
 Author : Foez Ahmed (foez.official@gmail.com)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
 */
 
 module encoder #(
