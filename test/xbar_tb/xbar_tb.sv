@@ -21,7 +21,7 @@ module xbar_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  localparam int NUM_INPUT  = 4;  // Number of input ports
+  localparam int NUM_INPUT = 4;  // Number of input ports
   localparam int NUM_OUTPUT = 4;  // Number of output ports
   localparam int DATA_WIDTH = 4;  // Width of the data bus
 
@@ -30,6 +30,7 @@ module xbar_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   typedef logic [DATA_WIDTH-1:0] data_t;  // Type definition for data
+  typedef logic [NUM_OUTPUT-1:0][$clog2(NUM_OUTPUT)-1:0] select_t;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -38,11 +39,18 @@ module xbar_tb;
   // generates static task start_clk_i with tHigh:4ns tLow:6ns
   `CREATE_CLK(clk_i, 4ns, 6ns)
 
-  logic arst_ni = 1;
+  data_t [NUM_INPUT-1:0] input_vector_i;
+  data_t [NUM_OUTPUT-1:0] output_vector_o;
+  select_t select_vector_i;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  event e_out_success[NUM_OUTPUT];
+
+  bit in_out_ok;  // Flag to check input-output match
+  int tx_success;  // Counter for successful transfers
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-INTERFACES
@@ -60,16 +68,49 @@ module xbar_tb;
   //-RTLS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // Instantiate the pipeline module with specified parameters
+  xbar #(
+      .NUM_INPUT (NUM_INPUT),
+      .NUM_OUTPUT(NUM_OUTPUT),
+      .DATA_WIDTH(DATA_WIDTH)
+  ) u_xbar (
+      .input_vector_i (input_vector_i),
+      .output_vector_o(output_vector_o),
+      .select_vector_i(select_vector_i)
+  );
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-METHODS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  task static apply_reset();
-    #100ns;
-    arst_ni <= 0;
-    #100ns;
-    arst_ni <= 1;
-    #100ns;
+  // Task to start input-output monitoring
+  task automatic start_in_out_mon();
+    in_out_ok  = 1;
+    tx_success = 0;
+    fork
+      forever begin
+        @(posedge clk_i);
+        foreach (output_vector_o[i]) begin
+          if (output_vector_o[i] !== input_vector_i[select_vector_i[i]]) begin
+            in_out_ok = 0;
+          end else begin 
+            ->e_out_success[i];
+            tx_success += in_out_ok;
+          end
+        end
+      end
+    join_none
+  endtask
+
+  // Task to start random drive on inputs
+  task automatic start_random_drive();
+    fork
+      forever begin
+        @(posedge clk_i);
+        select_vector_i <= $urandom;
+        input_vector_i  <= $urandom;
+      end
+    join_none
   endtask
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,18 +121,37 @@ module xbar_tb;
   //-PROCEDURALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  initial begin  // main initial
-
-    apply_reset();
-    start_clk_i();
-
-    @(posedge clk_i);
-    result_print(1, "This is a PASS");
-    @(posedge clk_i);
-    result_print(0, "And this is a FAIL");
-
+  // Initial block to handle fatal timeout
+  initial begin
+    #1ms;
+    $display("Success %d", tx_success);
+    result_print(0, "FATAL TIMEOUT");
     $finish;
+  end
 
+  // Initial block to start clock, monitor & drive
+  initial begin
+    start_clk_i();
+    start_in_out_mon();
+    start_random_drive();
+  end
+
+  int count = 0;
+
+  for (genvar i = 0; i < NUM_OUTPUT; i++) begin
+    initial begin
+      repeat (100) @(e_out_success[i]);
+      result_print(1, $sformatf("Output mux %d cleared", i));
+      count++;
+    end
+  end
+
+
+  always @(posedge clk_i) begin
+    if (count == NUM_OUTPUT) begin
+      result_print(in_out_ok, $sformatf("Data integrity. %0d transfers", tx_success));
+      $finish;
+    end
   end
 
 endmodule
