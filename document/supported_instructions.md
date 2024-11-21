@@ -1,5 +1,4 @@
 # Supprted Instructions
-
 ## RV32I
 `LUI❗`
 `AUIPC❗`
@@ -61,6 +60,14 @@
 `SRLW❗`
 `SRAW❗`
 
+## Zicsr
+`CSRRW❗`
+`CSRRS❗`
+`CSRRC❗`
+`CSRRWI❗`
+`CSRRSI❗`
+`CSRRCI❗`
+
 ## RV32M
 `MUL❗`
 `MULH❗`
@@ -105,6 +112,7 @@
 `AMOMAXU_D❗`
 
 ## RV32F
+`FLW❗`
 `FSW❗`
 `FMADD_S❗`
 `FMSUB_S❗`
@@ -171,4 +179,4 @@
 `FMV_X_D❗`
 `FCVT_D_L❗`
 `FCVT_D_LU❗`
-
+`FMV_D_X❗`
