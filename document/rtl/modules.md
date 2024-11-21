@@ -6,5 +6,6 @@
 [`rotating_xbar`](rotating_xbar.md)
 [`round_robin_arbiter`](round_robin_arbiter.md)
 [`rv64g_core`](rv64g_core.md)
+[`rv64g_inst_decoder`](rv64g_inst_decoder.md)
 [`rv64g_regfile`](rv64g_regfile.md)
 [`xbar`](xbar.md)
