@@ -114,7 +114,7 @@ xelab:
 ifeq ($(TOP), )
 	@$(error TOP not set)
 else
-	@cd build; xelab $(TOP) --nolog
+	@cd build; xelab $(TOP) -s $(TOP) --nolog
 endif
 
 .PHONY: xsim
