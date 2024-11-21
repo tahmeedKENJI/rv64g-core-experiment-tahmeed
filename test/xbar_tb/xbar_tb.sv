@@ -21,16 +21,16 @@ module xbar_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  localparam int NUM_INPUT = 4;  // Number of input ports
-  localparam int NUM_OUTPUT = 4;  // Number of output ports
-  localparam int DATA_WIDTH = 4;  // Width of the data bus
+  localparam int NumInput = 4;  // Number of input ports
+  localparam int NumOutput = 4;  // Number of output ports
+  localparam int DataWidth = 4;  // Width of the data bus
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  typedef logic [DATA_WIDTH-1:0] data_t;  // Type definition for data
-  typedef logic [NUM_OUTPUT-1:0][$clog2(NUM_OUTPUT)-1:0] select_t;
+  typedef logic [DataWidth-1:0] data_t;  // Type definition for data
+  typedef logic [NumOutput-1:0][$clog2(NumOutput)-1:0] select_t;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -39,15 +39,15 @@ module xbar_tb;
   // generates static task start_clk_i with tHigh:4ns tLow:6ns
   `CREATE_CLK(clk_i, 4ns, 6ns)
 
-  data_t [NUM_INPUT-1:0] input_vector_i;
-  data_t [NUM_OUTPUT-1:0] output_vector_o;
+  data_t [NumInput-1:0] input_vector_i;
+  data_t [NumOutput-1:0] output_vector_o;
   select_t select_vector_i;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  event e_out_success[NUM_OUTPUT];
+  event e_out_success[NumOutput];
 
   bit in_out_ok;  // Flag to check input-output match
   int tx_success;  // Counter for successful transfers
@@ -70,9 +70,9 @@ module xbar_tb;
 
   // Instantiate the pipeline module with specified parameters
   xbar #(
-      .NUM_INPUT (NUM_INPUT),
-      .NUM_OUTPUT(NUM_OUTPUT),
-      .DATA_WIDTH(DATA_WIDTH)
+      .NUM_INPUT (NumInput),
+      .NUM_OUTPUT(NumOutput),
+      .DATA_WIDTH(DataWidth)
   ) u_xbar (
       .input_vector_i (input_vector_i),
       .output_vector_o(output_vector_o),
@@ -93,7 +93,7 @@ module xbar_tb;
         foreach (output_vector_o[i]) begin
           if (output_vector_o[i] !== input_vector_i[select_vector_i[i]]) begin
             in_out_ok = 0;
-          end else begin 
+          end else begin
             ->e_out_success[i];
             tx_success += in_out_ok;
           end
@@ -138,7 +138,7 @@ module xbar_tb;
 
   int count = 0;
 
-  for (genvar i = 0; i < NUM_OUTPUT; i++) begin
+  for (genvar i = 0; i < NumOutput; i++) begin : g_forks
     initial begin
       repeat (100) @(e_out_success[i]);
       result_print(1, $sformatf("Output mux %d cleared", i));
@@ -148,7 +148,7 @@ module xbar_tb;
 
 
   always @(posedge clk_i) begin
-    if (count == NUM_OUTPUT) begin
+    if (count == NumOutput) begin
       result_print(in_out_ok, $sformatf("Data integrity. %0d transfers", tx_success));
       $finish;
     end
