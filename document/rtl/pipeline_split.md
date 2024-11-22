@@ -7,12 +7,10 @@
 
 ## Description
 
-The pipeline_split module is designed to manage data flow in a pipelined system and split the
-processed data into two separate output paths: a main output and a secondary output. It ensures
-proper synchronization and data integrity using handshaking signals. The module can handle various
-data widths, supports asynchronous reset and synchronous clear signals, and internally instantiates
-a pipeline module to process the data while directing the output to multiple destinations.
-This allows for efficient and controlled data distribution in hardware designs.
+The purpose of this module is to ensure reliable data transfer by prioritizing the main output path
+while providing a fallback to the secondary path if the main path is unavailable. This allows for
+efficient handling of data in scenarios where data must be directed to different paths based on
+readiness, ensuring no data loss or delay in processing.
 <br>**This file is part of DSInnovators:rv64g-core**
 <br>**Copyright (c) 2024 DSInnovators**
 <br>**Licensed under the MIT License**
