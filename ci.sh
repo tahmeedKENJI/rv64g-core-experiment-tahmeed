@@ -32,6 +32,7 @@ echo ""
 # SIMULATE
 ################################################################################
 
+ci_simulate pipeline_split_tb default
 ci_simulate pipeline_tb default
 ci_simulate rotating_xbar_tb default
 ci_simulate xbar_tb default

@@ -52,6 +52,8 @@ module xbar_tb;
   bit in_out_ok;  // Flag to check input-output match
   int tx_success;  // Counter for successful transfers
 
+  int count = 0;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-INTERFACES
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,8 +144,6 @@ module xbar_tb;
     start_in_out_mon();
     start_random_drive();
   end
-
-  int count = 0;
 
   for (genvar i = 0; i < NumOutput; i++) begin : g_forks
     initial begin
