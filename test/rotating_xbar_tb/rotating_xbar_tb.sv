@@ -40,7 +40,7 @@ module rotating_xbar_tb;
   `CREATE_CLK(clk_i, 4ns, 6ns)
 
   data_t [NumData-1:0] input_vector_i;
-  data_t [NumData-1:0] output_vector_o;
+  //data_t [NumData-1:0] output_vector_o;
   select_t start_select_i;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
