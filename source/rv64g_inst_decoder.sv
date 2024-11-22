@@ -7,7 +7,11 @@ Licensed under the MIT License
 See LICENSE file in the project root for full license information
 */
 
-module rv64g_inst_decoder #(
+`include "rv64g_pkg.sv"
+
+module rv64g_inst_decoder
+  import rv64g_pkg::*;
+#(
 ) (
     // 32-bit input instruction code
     input logic [31:0] code_i,

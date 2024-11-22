@@ -199,7 +199,7 @@ package rv64g_pkg;
     logic [63:0] imm;      // imm:64 / {fm:4,pred:4,succ:4} / shamt:6 / {uimm:5,csr:12}
     logic        jump;
     logic [63:0] reg_req;
-  } decoder_instr_t;
+  } decoded_instr_t;
 
   typedef enum logic [20:0] {
     //             19:16 14    13    12    11    10    9     8     7:0
