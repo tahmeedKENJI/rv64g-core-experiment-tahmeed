@@ -196,32 +196,55 @@ module pipeline_split_tb;
       ->e_buffer_clear;
     end else begin
       // Sequential block to trigger push only event
-      if ((data_in_valid_i & data_in_ready_o & ~data_out_main_valid_o & ~data_out_secondary_valid_o) === 1) begin
+      if ((data_in_valid_i
+          & data_in_ready_o
+          & ~data_out_main_valid_o
+          & ~data_out_secondary_valid_o) === 1)
+      begin
         ->e_push_only;
       end
 
       // Sequential block to trigger main output pop only event
-      if ((~data_in_valid_i & data_out_main_valid_o & data_out_main_ready_i & ~data_out_secondary_valid_o) === 1) begin
+      if ((~data_in_valid_i
+          & data_out_main_valid_o
+          & data_out_main_ready_i
+          & ~data_out_secondary_valid_o) === 1)
+      begin
         ->e_main_pop_only;
       end
 
       // Sequential block to trigger secondary output pop only event
-      if ((~data_in_valid_i & data_out_secondary_valid_o & data_out_secondary_ready_i & ~data_out_main_ready_i) === 1) begin
+      if ((~data_in_valid_i
+          & data_out_secondary_valid_o
+          & data_out_secondary_ready_i
+          & ~data_out_main_ready_i) === 1)
+      begin
         ->e_secondary_pop_only;
       end
 
       // Sequential block to trigger both output pop event
-      if ((data_out_main_ready_i & data_out_secondary_valid_o) === 1) begin
+      if ((data_out_main_ready_i
+          & data_out_secondary_valid_o) === 1)
+      begin
         ->e_both_pop;
       end
 
       // Sequential block to trigger push and main-pop-only event
-      if ((data_in_valid_i & data_in_ready_o & data_out_main_valid_o & data_out_main_ready_i & ~data_out_secondary_valid_o) === 1) begin
+      if ((data_in_valid_i
+          & data_in_ready_o
+          & data_out_main_valid_o
+          & data_out_main_ready_i
+          & ~data_out_secondary_valid_o) === 1)
+      begin
         ->e_push_main_pop;
       end
 
       // Sequential block to trigger push and secondary-pop-only event
-      if ((data_in_valid_i & data_in_ready_o & data_out_secondary_valid_o & data_out_secondary_ready_i & ~data_out_main_ready_i) === 1) begin
+      if ((data_in_valid_i
+          & data_in_ready_o
+          & data_out_secondary_valid_o
+          & data_out_secondary_ready_i
+          & ~data_out_main_ready_i) === 1) begin
         ->e_push_secondary_pop;
       end
     end
