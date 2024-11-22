@@ -99,13 +99,14 @@ simulate: print_logo soft_clean xvlog xelab xsim print_logo
 
 define compile
   $(eval SUB_LIB := $(shell echo "$(wordlist 1, 25,$(COMPILE_LIB))"))
-  cd build; xvlog $(INC_DIR) -sv $(SUB_LIB) --nolog  --define SIMULATION
+  cd build; xvlog $(INC_DIR) -sv $(SUB_LIB) --nolog --define SIMULATION | tee -a ../log/$(TOP)_$(CONFIG).log
   $(eval COMPILE_LIB := $(wordlist 26, $(words $(COMPILE_LIB)), $(COMPILE_LIB)))
   $(if $(COMPILE_LIB), $(call compile))
 endef
 
 .PHONY: xvlog
 xvlog:
+	@rm -rf log/$(TOP)_$(CONFIG).log
 	@$(eval COMPILE_LIB := $(COMP_LIB))
 	@$(call compile)
 
@@ -114,7 +115,7 @@ xelab:
 ifeq ($(TOP), )
 	@$(error TOP not set)
 else
-	@cd build; xelab $(TOP) -s $(TOP) --nolog
+	@cd build; xelab $(TOP) -s $(TOP) --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
 endif
 
 .PHONY: xsim
@@ -123,7 +124,7 @@ ifeq ($(TOP), )
 	@$(error TOP not set)
 else
 	@echo -n "$(TOP) $(CONFIG)" > build/config
-	@cd build; xsim $(TOP) --runall --log ../log/$(TOP)_$(CONFIG).log
+	@cd build; xsim $(TOP) --runall --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
 endif
 
 #########################################################################################
