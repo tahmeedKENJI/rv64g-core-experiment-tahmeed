@@ -51,6 +51,7 @@ module rotating_xbar_tb;
 
   bit in_out_ok;  // Flag to check input-output match
   int tx_success;  // Counter for successful transfers
+  int count = 0;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -80,7 +81,7 @@ module rotating_xbar_tb;
     fork
       forever begin
         @(posedge clk_i);
-        j = 0;
+        j   = 0;
         sel = start_select_i;
         // Loop to check each output line
         for (j = 0; j < NumData; j++) begin
@@ -137,8 +138,6 @@ module rotating_xbar_tb;
     start_in_out_mon();
     start_random_drive();
   end
-
-  int count = 0;
 
   for (genvar i = 0; i < NumData; i++) begin : g_forks
     initial begin
