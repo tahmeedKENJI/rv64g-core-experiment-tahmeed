@@ -27,8 +27,8 @@ module rotating_xbar #(
   //-SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // Internal variable to hold the calculated selection index
-  logic [$clog2(NUM_DATA)-1:0] select_vector_i;
+  // Internal vector to hold the calculated selection indices
+  logic [NUM_DATA-1:0][$clog2(NUM_DATA)-1:0] select_vector_i;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
@@ -37,7 +37,7 @@ module rotating_xbar #(
   // Generate blocks to calculate the selection index for each output
   for (genvar i = 0; i < NUM_DATA; i++) begin : g_select_vector_i
     always_comb begin
-      select_vector_i = (start_select_i + i) % NUM_DATA;  // Calculate rotated index
+      select_vector_i[i] = (start_select_i + i) % NUM_DATA;  // Calculate rotated index
     end
   end
 
