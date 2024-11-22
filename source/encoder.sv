@@ -1,9 +1,9 @@
 /*
-The encoder module is designed to determine the position of the highest priority active signal among
-multiple input wires. It encodes this position into an output index. This type of module is commonly
-used in digital systems where it is necessary to identify which of several input signals is active
-and assign a corresponding binary code to that signal. This functionality is crucial for
-applications like priority encoders and resource arbitration.
+The encoder module is designed to take a one-hot encoded input vector (wire_in) and generate a
+binary index (index_o) corresponding to the position of the active input wire. It employs OR gates
+to perform a hierarchical reduction of the input signals, ultimately determining the index of the
+active wire. This module is intended to work with one-hot encoded inputs and will produce incorrect
+results if multiple inputs are active simultaneously.
 Author : Foez Ahmed (foez.official@gmail.com)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators

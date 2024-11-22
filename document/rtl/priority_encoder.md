@@ -1,17 +1,17 @@
-# encoder (module)
+# priority_encoder (module)
 
 ### Author : Foez Ahmed (foez.official@gmail.com)
 
 ## TOP IO
-<img src="./encoder_top.svg">
+<img src="./priority_encoder_top.svg">
 
 ## Description
 
-The encoder module is designed to take a one-hot encoded input vector (wire_in) and generate a
-binary index (index_o) corresponding to the position of the active input wire. It employs OR gates
-to perform a hierarchical reduction of the input signals, ultimately determining the index of the
-active wire. This module is intended to work with one-hot encoded inputs and will produce incorrect
-results if multiple inputs are active simultaneously.
+The priority_encoder module's primary purpose is to encode an input vector of signals, determining
+the index of the highest priority active input wire. It achieves this by first using a fixed
+priority arbiter to generate a one-hot encoded signal of the highest priority request. This one-hot
+encoded signal is then passed to a simple encoder module, which converts it into a binary index
+representing the active input wire.
 <br>**This file is part of DSInnovators:rv64g-core**
 <br>**Copyright (c) 2024 DSInnovators**
 <br>**Licensed under the MIT License**
