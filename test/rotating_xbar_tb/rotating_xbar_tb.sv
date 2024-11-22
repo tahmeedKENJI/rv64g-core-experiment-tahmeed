@@ -7,7 +7,7 @@ Licensed under the MIT License
 See LICENSE file in the project root for full license information
 */
 
-module xbar_tb;
+module rotating_xbar_tb;
 
   //`define ENABLE_DUMPFILE
 
@@ -21,8 +21,8 @@ module xbar_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  localparam int NumInput = 4;  // Number of input ports
-  localparam int NumOutput = 4;  // Number of output ports
+
+  localparam int NumData = 4;  // Number of input and output ports
   localparam int DataWidth = 4;  // Width of the data bus
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ module xbar_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   typedef logic [DataWidth-1:0] data_t;  // Type definition for data
-  typedef logic [NumOutput-1:0][$clog2(NumOutput)-1:0] select_t;
+  typedef logic [$clog2(NumData)-1:0] select_t;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -39,44 +39,31 @@ module xbar_tb;
   // generates static task start_clk_i with tHigh:4ns tLow:6ns
   `CREATE_CLK(clk_i, 4ns, 6ns)
 
-  data_t [NumInput-1:0] input_vector_i;
-  data_t [NumOutput-1:0] output_vector_o;
-  select_t select_vector_i;
+  data_t [NumData-1:0] input_vector_i;
+  data_t [NumData-1:0] output_vector_o;
+  select_t start_select_i;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  event e_out_success[NumOutput];
+  event e_select_success[NumData];
 
   bit in_out_ok;  // Flag to check input-output match
   int tx_success;  // Counter for successful transfers
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-INTERFACES
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-CLASSES
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-ASSIGNMENTS
-  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Instantiate the pipeline module with specified parameters
-  xbar #(
-      .NUM_INPUT (NumInput),
-      .NUM_OUTPUT(NumOutput),
+  rotating_xbar #(
+      .NUM_DATA  (NumData),
       .DATA_WIDTH(DataWidth)
-  ) u_xbar (
+  ) u_rotating_xbar (
       .input_vector_i (input_vector_i),
       .output_vector_o(output_vector_o),
-      .select_vector_i(select_vector_i)
+      .start_select_i (start_select_i)
   );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,19 +72,27 @@ module xbar_tb;
 
   // Task to start input-output monitoring
   task automatic start_in_out_mon();
+    int j = 0;
+    int sel;
     in_out_ok  = 1;
     tx_success = 0;
+
     fork
       forever begin
         @(posedge clk_i);
-        foreach (output_vector_o[i]) begin
-          if (output_vector_o[i] !== input_vector_i[select_vector_i[i]]) begin
-            in_out_ok = 0;
-          end else begin
-            ->e_out_success[i];
-            tx_success += in_out_ok;
+        j = 0;
+        sel = start_select_i;
+        // Loop to check each output line
+        for (j = 0; j < NumData; j++) begin
+          if (output_vector_o[j] !== input_vector_i[(sel+j)%NumData]) begin
+            break;
           end
         end
+
+        if (j == NumData) begin
+          ->e_select_success[sel];
+          tx_success++;
+        end else in_out_ok = 0;
       end
     join_none
   endtask
@@ -107,8 +102,8 @@ module xbar_tb;
     fork
       forever begin
         @(posedge clk_i);
-        select_vector_i <= $urandom;
-        input_vector_i  <= $urandom;
+        start_select_i <= $urandom;
+        input_vector_i <= $urandom;
       end
     join_none
   endtask
@@ -118,7 +113,7 @@ module xbar_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   always @(posedge clk_i) begin
-    if (count == NumOutput) begin
+    if (count == NumData) begin
       result_print(in_out_ok, $sformatf("Data integrity. %0d transfers", tx_success));
       $finish;
     end
@@ -131,7 +126,7 @@ module xbar_tb;
   // Initial block to handle fatal timeout
   initial begin
     #1ms;
-    $display("Success %d", tx_success);
+    $display("Success = %d", tx_success);
     result_print(0, "FATAL TIMEOUT");
     $finish;
   end
@@ -145,10 +140,10 @@ module xbar_tb;
 
   int count = 0;
 
-  for (genvar i = 0; i < NumOutput; i++) begin : g_forks
+  for (genvar i = 0; i < NumData; i++) begin : g_forks
     initial begin
-      repeat (100) @(e_out_success[i]);
-      result_print(1, $sformatf("Output mux %d cleared", i));
+      repeat (100) @(e_select_success[i]);
+      result_print(1, $sformatf("start_select = %d cleared", i));
       count++;
     end
   end
