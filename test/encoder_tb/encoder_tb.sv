@@ -1,29 +1,20 @@
 /*
 Description
-The encoder module is designed to determine the position of the highest priority active signal among multiple input wires. 
-It encodes this position into an output index. 
-This type of module is commonly used in digital systems where it is necessary to identify 
-  which of several input signals is active and assign a corresponding binary code to that signal. 
-This functionality is crucial for applications like priority encoders and resource arbitration.
-
+The encoder module is designed to determine the position of the highest priority active signal among
+multiple input wires. It encodes this position into an output index. This type of module is commonly
+used in digital systems where it is necessary to identify which of several input signals is active
+and assign a corresponding binary code to that signal. This functionality is crucial for
+applications like priority encoders and resource arbitration.
+Author : S. M. Tahmeed Reza (tahmeedreza@gmail.com)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License
 See LICENSE file in the project root for full license information
-
-Parameters:
-NUM_WIRE	int		16	Number of input wires
-
-Ports:
-wire_in	input	logic [NUM_WIRE-1:0]		Input vector of wires
-index_o	output	logic [$clog2(NUM_WIRE)-1:0]		Output index of the highest priority wire
-
-Author : S. M. Tahmeed Reza (tahmeedreza@gmail.com)
 */
 
 module encoder_tb;
 
-  `define ENABLE_DUMPFILE 
+  // `define ENABLE_DUMPFILE
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
@@ -64,7 +55,7 @@ module encoder_tb;
   int ms_time_var = 1;  // records time elapsed
 
   bit in_out_ok;
-  int tx_success = 0; 
+  int tx_success = 0;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-INTERFACES
@@ -96,7 +87,7 @@ module encoder_tb;
 
   // monitor the changes in input and output
   task automatic start_in_out_mon();
-  in_out_ok = 1;
+    in_out_ok = 1;
     fork
       forever begin
         @(posedge clk_i);
