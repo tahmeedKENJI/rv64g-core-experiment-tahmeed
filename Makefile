@@ -22,6 +22,8 @@ help:
 	@echo -e "\033[1;32mmake tb TOP=<top_module_name>\033[0m open new or existing testbench top"
 	@echo -e "\033[1;32mmake rtl RTL=<module_name>\033[0m open new or existing rtl design"
 	@echo -e "\033[1;32mmake simulate TOP=<top_module_name>\033[0m open new or existing rtl design"
+	@echo -e "\033[1;32mmake lint\033[0m for linting"
+	@echo -e "\033[1;32mmake sta RTL=<module_name>\033[0m to run static timing analysis @ 100MHz clk_i"
 
 #########################################################################################
 # VARIABLES
@@ -177,8 +179,8 @@ list_modules: clean
 # VERIBLE
 #########################################################################################
 
-.PHONY: verible_lint
-verible_lint:
+.PHONY: lint
+lint:
 	@rm -rf temp_lint_error
 	@$(eval list := $(shell find -name "*.sv"))
 	@- $(foreach file, $(list), verible-verilog-lint.exe $(file) >> temp_lint_error 2>&1;)
@@ -225,8 +227,6 @@ print_logo:
 	@echo -e "\033[1;34m |____/|____/___|_| |_|_| |_|\___/ \_/ \__,_|\__\___/|_|  |___/ \033[0m";
 	@echo -e "\033[1;39m ______________ Dynamic Solution Innovators Ltd. ______________ \033[0m";
 	@echo -e "";
-
-
 
 .PHONY: soft_clean
 soft_clean:
