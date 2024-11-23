@@ -143,7 +143,7 @@ sta: generate_flist
 	@echo "add_files ../TIMING_REPORTS_$(RTL)/clk_i.xdc" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
 	@$(foreach word, $(shell cat build/flist), echo "add_files $(word)" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl;)
 	@echo "set_property top $(RTL) [current_fileset]" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
-	@echo "synth_design -top $(RTL) -part xc7z020clg400-1" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "synth_design -top $(RTL) -part xc7z020clg484-1" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
 	@echo "report_methodology -file ../TIMING_REPORTS_$(RTL)/methodology_report.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
 	@echo "report_timing_summary -file ../TIMING_REPORTS_$(RTL)/timing_summary.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
 	@echo "report_timing -delay_type max -path_type full -max_paths 100 -file ../TIMING_REPORTS_$(RTL)/detailed_timing_max.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
