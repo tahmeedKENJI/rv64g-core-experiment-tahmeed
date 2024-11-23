@@ -166,7 +166,7 @@ generate_flist: list_modules
 	@sed "s/^source/..\/source/g" -i build/flist
 
 .PHONY: list_modules
-list_modules: clean
+list_modules: soft_clean
 	@$(eval COMPILE_LIB := $(COMP_LIB))
 	@$(call compile)
 	@cd build; xelab $(RTL) -s $(RTL)
