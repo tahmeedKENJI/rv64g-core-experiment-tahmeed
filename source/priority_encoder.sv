@@ -39,7 +39,7 @@ module priority_encoder #(
 
   // Instantiate the encoder module
   encoder #(
-      .NUM_WIR(NUM_WIRE)  // Number of input wires for the encoder
+      .NUM_WIRE(NUM_WIRE)  // Number of input wires for the encoder
   ) u_encoder (
       .wire_in(one_hot_out),  // Input one-hot encoded signals
       .index_o(index_o)       // Output index of the highest priority wire

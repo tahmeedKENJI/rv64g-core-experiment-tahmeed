@@ -1,6 +1,7 @@
-temp_*
+*.jou
 *.log
 *.pb
-*.jou
-xsim_dir
 *.vcd
+temp_*
+TIMING_REPORTS_*
+xsim_dir

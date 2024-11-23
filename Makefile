@@ -127,6 +127,52 @@ else
 	@cd build; xsim $(TOP) --runall --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
 endif
 
+define make_clk_i_100_MHz
+	echo "create_clock -name clk_i -period 10.000 [get_ports clk_i]" > TIMING_REPORTS_$(RTL)/clk_i.xdc
+endef
+
+.PHONY: sta
+sta: generate_flist
+	@rm -rf TIMING_REPORTS_$(RTL)
+	@mkdir -p TIMING_REPORTS_$(RTL)
+	@$(call make_clk_i_100_MHz)
+	@echo "create_project top" > TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "set_property include_dirs ../include [current_fileset]" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "add_files ../TIMING_REPORTS_$(RTL)/clk_i.xdc" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@$(foreach word, $(shell cat build/flist), echo "add_files $(word)" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl;)
+	@echo "set_property top $(RTL) [current_fileset]" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "synth_design -top $(RTL) -part xc7z020clg400-1" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "report_methodology -file ../TIMING_REPORTS_$(RTL)/methodology_report.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "report_timing_summary -file ../TIMING_REPORTS_$(RTL)/timing_summary.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "report_timing -delay_type max -path_type full -max_paths 100 -file ../TIMING_REPORTS_$(RTL)/detailed_timing_max.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "report_timing -delay_type min -path_type full -max_paths 100 -file ../TIMING_REPORTS_$(RTL)/detailed_timing_min.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "report_clock_interaction -file ../TIMING_REPORTS_$(RTL)/clock_interaction.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "report_timing -delay_type max -slack_lesser_than 0 -max_paths 100 -file ../TIMING_REPORTS_$(RTL)/failing_paths.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@echo "exit" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@cd build; vivado -mode batch -source ../TIMING_REPORTS_$(RTL)/$(RTL).tcl
+
+.PHONY: generate_flist
+generate_flist: list_modules
+	@$(eval _TMP := )
+	@$(foreach word,$(shell cat build/list),                                          \
+		$(if $(filter $(word),$(_TMP)),                                                 \
+			: ,                                                                           \
+			$(eval _TMP += $(word))                                                       \
+				find source -name "$(word).sv" >> build/flist                               \
+		);                                                                              \
+	)
+	@sed "s/^source/..\/source/g" -i build/flist
+
+.PHONY: list_modules
+list_modules: clean
+	@$(eval COMPILE_LIB := $(COMP_LIB))
+	@$(call compile)
+	@cd build; xelab $(RTL) -s $(RTL)
+	@cat build/xelab.log | grep -E "work" > build/list
+	@sed -i "s/.*work\.//gi" build/list;
+	@sed -i "s/(.*//gi" build/list;
+	@sed -i "s/_default.*//gi" build/list;
+
 #########################################################################################
 # VERIBLE
 #########################################################################################
