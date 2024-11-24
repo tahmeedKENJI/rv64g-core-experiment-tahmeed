@@ -29,5 +29,6 @@ accordingly, making it ideal for systems where fair resource distribution is cru
 |-|-|-|-|-|
 |arst_ni|input|logic||Asynchronous reset, active low|
 |clk_i|input|logic||Clock input|
+|allow_i|input|logic||Allow Request|
 |req_i|input|logic [NUM_REQ-1:0]||Request signals|
 |gnt_o|output|logic [NUM_REQ-1:0]||Grant signals|
