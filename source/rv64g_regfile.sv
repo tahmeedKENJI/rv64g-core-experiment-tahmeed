@@ -9,9 +9,11 @@ Licensed under the MIT License
 See LICENSE file in the project root for full license information
 */
 
+`include "rv64g_pkg.sv"
+
 module rv64g_regfile #(
-    localparam int NR = 64,  // Number of registers
-    localparam int DW = 64,  // Data/Register Width
+    localparam int NR = rv64g_pkg::NUM_REGS,  // Number of registers
+    localparam int DW = rv64g_pkg::XLEN,  // Data/Register Width
     localparam int AW = $clog2(NR)  // Address Width (log base 2 of the number of registers)
 ) (
     input logic arst_ni,  // Asynchronous reset, active low

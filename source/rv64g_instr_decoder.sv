@@ -9,9 +9,9 @@ See LICENSE file in the project root for full license information
 
 `include "rv64g_pkg.sv"
 
-module rv64g_instr_decoder
-  import rv64g_pkg::*;
-#(
+module rv64g_instr_decoder #(
+    // type definition of decoded instruction
+    localparam type decoded_instr_t = rv64g_pkg::decoded_instr_t
 ) (
     // 32-bit input instruction code
     input logic [31:0] code_i,
@@ -20,26 +20,28 @@ module rv64g_instr_decoder
     output decoded_instr_t cmd_o
 );
 
+  import rv64g_pkg::*;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  logic [ 4:0] rd;  // Destination register
-  logic [ 4:0] rs1;  // Source register 1
-  logic [ 4:0] rs2;  // Source register 2
-  logic [ 4:0] rs3;  // Source register 3
+  logic [4:0] rd;  // Destination register
+  logic [4:0] rs1;  // Source register 1
+  logic [4:0] rs2;  // Source register 2
+  logic [4:0] rs3;  // Source register 3
 
-  logic [63:0] aimm;  // SHIFT AMOUNT
-  logic [63:0] bimm;  // BTYPE INSTRUCTION IMMEDIATE
-  logic [63:0] cimm;  // CSR INSTRUCTION IMMEDIATE
-  logic [63:0] iimm;  // ITYPE INSTRUCTION IMMEDIATE
-  logic [63:0] jimm;  // JTYPE INSTRUCTION IMMEDIATE
-  logic [63:0] rimm;  // FLOATING ROUND MODE IMMEDIATE
-  logic [63:0] simm;  // RTYPE INSTRUCTION IMMEDIATE
-  logic [63:0] timm;  // ATOMICS IMMEDIATE
-  logic [63:0] uimm;  // UTYPE INSTRUCTION IMMEDIATE
+  logic [XLEN-1:0] aimm;  // SHIFT AMOUNT
+  logic [XLEN-1:0] bimm;  // BTYPE INSTRUCTION IMMEDIATE
+  logic [XLEN-1:0] cimm;  // CSR INSTRUCTION IMMEDIATE
+  logic [XLEN-1:0] iimm;  // ITYPE INSTRUCTION IMMEDIATE
+  logic [XLEN-1:0] jimm;  // JTYPE INSTRUCTION IMMEDIATE
+  logic [XLEN-1:0] rimm;  // FLOATING ROUND MODE IMMEDIATE
+  logic [XLEN-1:0] simm;  // RTYPE INSTRUCTION IMMEDIATE
+  logic [XLEN-1:0] timm;  // ATOMICS IMMEDIATE
+  logic [XLEN-1:0] uimm;  // UTYPE INSTRUCTION IMMEDIATE
 
-  wand  [19:0] intr_func;  // intermediate function
+  wand [19:0] intr_func;  // intermediate function
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS

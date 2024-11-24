@@ -1,9 +1,9 @@
-# rv64g_inst_decoder (module)
+# rv64g_instr_launcher (module)
 
 ### Author : Foez Ahmed (https://github.com/foez-ahmed)
 
 ## TOP IO
-<img src="./rv64g_inst_decoder_top.svg">
+<img src="./rv64g_instr_launcher_top.svg">
 
 ## Description
 
@@ -16,9 +16,19 @@ Write a markdown documentation for this systemverilog module:
 ## Parameters
 |Name|Type|Dimension|Default Value|Description|
 |-|-|-|-|-|
+|decoded_instr_t|type||rv64g_pkg::decoded_instr_t||
+|NR|int||rv64g_pkg::NUM_REGS||
 
 ## Ports
 |Name|Direction|Type|Dimension|Description|
 |-|-|-|-|-|
-|code_i|input|logic [31:0]|| 32-bit input instruction code|
-|cmd_o|output|decoded_instr_t|| Output decoded instruction|
+|arst_ni|input|logic|||
+|clk_i|input|logic|||
+|clear_i|input|logic|||
+|instr_in_i|input|decoded_instr_t|||
+|instr_in_valid_i|input|logic|||
+|instr_in_ready_o|output|logic|||
+|locks_i|input|[NR-1:0]|||
+|instr_out_o|output|decoded_instr_t|||
+|instr_out_valid_o|output|logic|||
+|instr_out_ready_i|input|logic|||

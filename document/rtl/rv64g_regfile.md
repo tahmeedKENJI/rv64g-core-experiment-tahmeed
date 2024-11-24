@@ -18,8 +18,8 @@ registers, making it suitable for operations that require controlled access to t
 ## Parameters
 |Name|Type|Dimension|Default Value|Description|
 |-|-|-|-|-|
-|NR|int||64|Number of registers|
-|DW|int||64|Data/Register Width|
+|NR|int||rv64g_pkg::NUM_REGS|Number of registers|
+|DW|int||rv64g_pkg::XLEN|Data/Register Width|
 |AW|int||$clog2(NR)|Address Width (log base 2 of the number of registers)|
 
 ## Ports
