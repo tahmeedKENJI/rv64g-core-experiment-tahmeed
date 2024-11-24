@@ -17,7 +17,8 @@ module round_robin_arbiter #(
     input logic arst_ni,  // Asynchronous reset, active low
     input logic clk_i,    // Clock input
 
-    input logic [NUM_REQ-1:0] req_i,  // Request signals
+    input logic               allow_i,  // Allow Request
+    input logic [NUM_REQ-1:0] req_i,    // Request signals
 
     output logic [NUM_REQ-1:0] gnt_o  // Grant signals
 );
@@ -68,6 +69,7 @@ module round_robin_arbiter #(
   fixed_priority_arbiter #(
       .NUM_REQ(NUM_REQ)
   ) u_fixed_priority_arbiter (
+      .allow_i,
       .req_i(fp_arb_req),  // Connect rotated request inputs
       .gnt_o(fp_arb_gnt)   // Connect grant outputs
   );

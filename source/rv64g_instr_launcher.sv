@@ -11,7 +11,8 @@ See LICENSE file in the project root for full license information
 
 module rv64g_instr_launcher #(
     localparam type decoded_instr_t = rv64g_pkg::decoded_instr_t,
-    localparam int NR = rv64g_pkg::NUM_REGS
+    localparam int NR = rv64g_pkg::NUM_REGS,
+    localparam type locks_t = logic [NR-1:0]
 ) (
     input logic arst_ni,
     input logic clk_i,
@@ -21,7 +22,7 @@ module rv64g_instr_launcher #(
     input  logic           instr_in_valid_i,
     output logic           instr_in_ready_o,
 
-    input [NR-1:0] locks_i,
+    input locks_t locks_i,
 
     output decoded_instr_t instr_out_o,
     output logic           instr_out_valid_o,
@@ -51,6 +52,11 @@ module rv64g_instr_launcher #(
   logic           [NOS:0] pl_outs_valid;
   logic           [NOS:0] pl_outs_ready;
 
+  locks_t                 locks         [NOS+2];
+
+  logic           [NOS:0] arb_req;
+  logic           [NOS:0] arb_gnt;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +64,8 @@ module rv64g_instr_launcher #(
   assign pl_ins[0] = instr_in_i;
   assign pl_ins_valid[0] = instr_in_valid_i;
   assign instr_in_ready_o = pl_ins_ready[0];
+
+  assign locks[0] = locks_i;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -101,16 +109,15 @@ module rv64g_instr_launcher #(
         .pl_valid_i(pl_outs_valid[i]),
         .pl_ready_o(pl_outs_ready[i]),
         .jump_i(pl_outs[i].jump),
-        .reg_req_i(pl_outs[i].jump),
-        .locks_i(),  // TODO
-        .locks_o(),  // TODO
-        .arb_req_o(),  // TODO
-        .arb_gnt_i()  // TODO
+        .reg_req_i(pl_outs[i].req_req),
+        .locks_i(locks[i]),
+        .locks_o(locks[i+1]),
+        .arb_req_o(arb_req[i]),
+        .arb_gnt_i(arb_gnt[i])
     );
   end
 
   // TODO
-  // reg_gnt_ckr
   // Fixed Priority Arb
   // MUX
   // ENCODER
