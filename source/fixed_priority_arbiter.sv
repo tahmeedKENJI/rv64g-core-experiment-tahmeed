@@ -6,6 +6,8 @@ certain tasks need to be prioritized over others to ensure efficient resource al
 performance. The module is parameterized to handle a configurable number of request signals,
 providing flexibility for various applications.
 
+**req_i[0] has the highest priority**
+
 Author: Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
