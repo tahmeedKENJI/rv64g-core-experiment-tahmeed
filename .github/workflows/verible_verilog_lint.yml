@@ -15,7 +15,7 @@ jobs:
       shell: bash
       run: |
         git submodule update --init --recursive --depth 1
-        make verible_lint
+        make lint
 
     - name: Fail if Lint Issue
       shell: bash
