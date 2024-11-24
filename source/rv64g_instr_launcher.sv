@@ -96,6 +96,19 @@ module rv64g_instr_launcher #(
       .data_out_ready_i(pl_outs_ready[0])
   );
 
+  for (genvar i = 0; i < NOS + 1; i++) begin : g_ckeckers
+    reg_gnt_ckr #() u_reg_gnt_ckr (
+        .pl_valid_i(pl_outs_valid[i]),
+        .pl_ready_o(pl_outs_ready[i]),
+        .jump_i(pl_outs[i].jump),
+        .reg_req_i(pl_outs[i].jump),
+        .locks_i(),  // TODO
+        .locks_o(),  // TODO
+        .arb_req_o(),  // TODO
+        .arb_gnt_i()  // TODO
+    );
+  end
+
   // TODO
   // reg_gnt_ckr
   // Fixed Priority Arb

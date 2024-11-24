@@ -15,7 +15,8 @@ module reg_gnt_ckr #(
     input  logic pl_valid_i,
     output logic pl_ready_o,
 
-    input logic [NR-1:0] jump_i,
+    input logic          jump_i,
+    input logic [NR-1:0] reg_req_i,
 
     input  logic [NR-1:0] locks_i,
     output logic [NR-1:0] locks_o,

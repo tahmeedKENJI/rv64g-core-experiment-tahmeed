@@ -4,6 +4,7 @@
 [`pipeline`](pipeline.md)
 [`pipeline_split`](pipeline_split.md)
 [`priority_encoder`](priority_encoder.md)
+[`reg_gnt_ckr`](reg_gnt_ckr.md)
 [`rotating_xbar`](rotating_xbar.md)
 [`round_robin_arbiter`](round_robin_arbiter.md)
 [`rv64g_core`](rv64g_core.md)
