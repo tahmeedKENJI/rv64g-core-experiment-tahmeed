@@ -7,9 +7,11 @@ Licensed under the MIT License
 See LICENSE file in the project root for full license information
 */
 
-module rv64g_instr_launcher #(
-    parameter int NUM_OUTSTANDING = 7,
-    parameter int NUM_REG         = 7
+`include "rv64g_pkg.sv"
+
+module rv64g_instr_launcher
+  import rv64g_pkg::*;
+#(
 ) (
     //-PORTS
 );

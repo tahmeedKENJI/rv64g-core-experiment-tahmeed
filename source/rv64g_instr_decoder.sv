@@ -9,7 +9,7 @@ See LICENSE file in the project root for full license information
 
 `include "rv64g_pkg.sv"
 
-module rv64g_inst_decoder
+module rv64g_instr_decoder
   import rv64g_pkg::*;
 #(
 ) (
