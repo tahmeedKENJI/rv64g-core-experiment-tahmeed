@@ -213,15 +213,31 @@ package rv64g_pkg;
   } func_t;
 
   typedef struct packed {
-    func_t       func;
-    logic [5:0]  rd;
-    logic [5:0]  rs1;
-    logic [5:0]  rs2;
-    logic [5:0]  rs3;
-    logic [63:0] imm;      // imm:64 / {fm:4,pred:4,succ:4} / shamt:6 / {uimm:5,csr:12}
+
+    // The `func` field enumerates the function that the current instruction.
+    func_t func;
+
+    // The `rd` is the destination register ant the `rs1`, `rs2` & `rs3` are the source registers.
+    // An offset of 32 is added for the floating point registers' address.
+    logic [5:0] rd;
+    logic [5:0] rs1;
+    logic [5:0] rs2;
+    logic [5:0] rs3;
+
+    // The `imm` has multi-purpose such signed/unsigned immediate, shift, csr_addr, etc. based on
+    // the `func`. -------- imm:64 / {fm:4,pred:4,succ:4} / shamt:6 / {uimm:5,csr:12}
+    logic [63:0] imm;
+
+    // The `pc` hold's the physical address of the current instruction.
     logic [63:0] pc;
-    logic        jump;
+
+    // The `jump` field is set high when the current instruction can cause branch/jump.
+    logic jump;
+
+    // The `reg_req` field is a flag that indicates the registers that are required for the current
+    // instruction
     logic [63:0] reg_req;
+
   } decoded_instr_t;
 
   typedef enum logic [20:0] {
