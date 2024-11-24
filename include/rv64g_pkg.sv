@@ -197,6 +197,7 @@ package rv64g_pkg;
     logic [5:0]  rs2;
     logic [5:0]  rs3;
     logic [63:0] imm;      // imm:64 / {fm:4,pred:4,succ:4} / shamt:6 / {uimm:5,csr:12}
+    logic [63:0] pc;
     logic        jump;
     logic [63:0] reg_req;
   } decoded_instr_t;
