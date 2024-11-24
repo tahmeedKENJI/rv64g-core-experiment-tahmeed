@@ -5,7 +5,7 @@ grant signals for the active request with the highest priority. This is useful i
 certain tasks need to be prioritized over others to ensure efficient resource allocation and system
 performance. The module is parameterized to handle a configurable number of request signals,
 providing flexibility for various applications.
-Author : Foez Ahmed (foez.official@gmail.com)
+Author : Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License

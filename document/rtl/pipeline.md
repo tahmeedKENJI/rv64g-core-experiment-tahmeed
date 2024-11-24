@@ -1,6 +1,6 @@
 # pipeline (module)
 
-### Author : Foez Ahmed (foez.official@gmail.com)
+### Author : Foez Ahmed (https://github.com/foez-ahmed)
 
 ## TOP IO
 <img src="./pipeline_top.svg">

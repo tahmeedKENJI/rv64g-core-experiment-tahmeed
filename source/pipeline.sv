@@ -9,7 +9,7 @@ functionalities include:
 - Managing internal state with flags to indicate if the pipeline stage is full or ready
 
 This ensures efficient and controlled data processing within the pipeline.
-Author : Foez Ahmed (foez.official@gmail.com)
+Author : Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License

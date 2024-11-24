@@ -1,6 +1,6 @@
 # fixed_priority_arbiter (module)
 
-### Author : Foez Ahmed (foez.official@gmail.com)
+### Author : Foez Ahmed (https://github.com/foez-ahmed)
 
 ## TOP IO
 <img src="./fixed_priority_arbiter_top.svg">

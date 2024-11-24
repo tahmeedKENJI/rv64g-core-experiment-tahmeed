@@ -5,7 +5,7 @@ multiple input wires. It encodes this position into an output index. This type o
 used in digital systems where it is necessary to identify which of several input signals is active
 and assign a corresponding binary code to that signal. This functionality is crucial for
 applications like priority encoders and resource arbitration.
-Author : S. M. Tahmeed Reza (tahmeedreza@gmail.com)
+Author : S. M. Tahmeed Reza (https://github.com/tahmeedKENJI)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License

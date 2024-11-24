@@ -1,6 +1,6 @@
 # round_robin_arbiter (module)
 
-### Author : Foez Ahmed (foez.official@gmail.com)
+### Author : Foez Ahmed (https://github.com/foez-ahmed)
 
 ## TOP IO
 <img src="./round_robin_arbiter_top.svg">

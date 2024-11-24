@@ -1,6 +1,6 @@
 /*
 Description
-Author : Subhan Zawad Bihan (subhan.bihan@gmail.com)
+Author : Subhan Zawad Bihan (https://github.com/SubhanBihan)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License

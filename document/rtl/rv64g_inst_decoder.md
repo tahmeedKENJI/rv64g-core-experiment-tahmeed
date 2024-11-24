@@ -1,6 +1,6 @@
 # rv64g_inst_decoder (module)
 
-### Author : Foez Ahmed (foez.official@gmail.com)
+### Author : Foez Ahmed (https://github.com/foez-ahmed)
 
 ## TOP IO
 <img src="./rv64g_inst_decoder_top.svg">

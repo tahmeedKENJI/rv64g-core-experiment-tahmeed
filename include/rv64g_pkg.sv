@@ -1,5 +1,5 @@
 /*
-Author : Foez Ahmed (foez.official@gmail.com)
+Author : Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License

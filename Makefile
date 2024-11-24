@@ -1,8 +1,7 @@
 #########################################################################################
 ##                                                                                     ##
 ##    Description : A single Makefile for Xilinx Vivado Simulation in this reposity    ##
-##    Author      : Foez Ahmed                                                         ##
-##    Email       : foez.official@gmail.com                                            ##
+##    Author      : Foez Ahmed (https://github.com/foez-ahmed)                         ##
 ##                                                                                     ##
 #########################################################################################
 
@@ -41,7 +40,7 @@ endif
 CONFIG?=default
 
 USER_NAME = $(shell git config user.name)
-USER_EMAIL = $(shell git config user.email)
+GIT_ID = https:\/\/github.com\/$(shell git config credential.username)
 
 #########################################################################################
 # FILES
@@ -71,7 +70,7 @@ test/$(TOP):
 test/$(TOP)/$(TOP).sv:
 	@mkdir -p test/$(TOP)
 	@cat submodules/sv-genesis/tb_model.sv \
-	| sed "s/Author : name (email)/Author : $(USER_NAME) ($(USER_EMAIL))/g" \
+	| sed "s/Author : name (email)/Author : $(USER_NAME) ($(GIT_ID))/g" \
 	| sed "s/module tb_model;/module $(TOP);/g" \
 	| sed "s/squared-studio/DSInnovators/g" \
 	| sed "s/sv-genesis/rv64g-core/g" \
@@ -86,7 +85,7 @@ rtl: source/$(RTL).sv submodules/sv-genesis/rtl_model.sv
 
 source/$(RTL).sv:
 	@cat submodules/sv-genesis/rtl_model.sv \
-	| sed "s/Author : name (email)/Author : $(USER_NAME) ($(USER_EMAIL))/g" \
+	| sed "s/Author : name (email)/Author : $(USER_NAME) ($(GIT_ID))/g" \
 	| sed "s/module rtl_model/module $(RTL)/g" \
 	| sed "s/squared-studio/DSInnovators/g" \
 	| sed "s/sv-genesis/rv64g-core/g" \

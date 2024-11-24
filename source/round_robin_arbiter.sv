@@ -4,7 +4,7 @@ using a round-robin arbitration scheme. It ensures that each requester gets a ch
 resource in a cyclic order, preventing any single requester from monopolizing the resource. The
 module handles request signals, prioritizes them based on a rotating index, and grants access
 accordingly, making it ideal for systems where fair resource distribution is crucial.
-Author : Foez Ahmed (foez.official@gmail.com)
+Author : Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License

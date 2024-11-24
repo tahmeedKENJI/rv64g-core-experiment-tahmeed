@@ -3,7 +3,7 @@ The purpose of this module is to ensure reliable data transfer by prioritizing t
 while providing a fallback to the secondary path if the main path is unavailable. This allows for
 efficient handling of data in scenarios where data must be directed to different paths based on
 readiness, ensuring no data loss or delay in processing.
-Author : Foez Ahmed (foez.official@gmail.com)
+Author : Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
 Copyright (c) 2024 DSInnovators
 Licensed under the MIT License
