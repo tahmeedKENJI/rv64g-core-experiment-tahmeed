@@ -33,6 +33,7 @@ module priority_encoder #(
   fixed_priority_arbiter #(
       .NUM_REQ(NUM_WIRE)  // Number of requests
   ) u_fixed_priority_arbiter (
+      .allow_i('1),
       .req_i(wire_in),     // Input request signals
       .gnt_o(one_hot_out)  // One-hot encoded grant output
   );
