@@ -27,8 +27,8 @@ module round_robin_arbiter #(
   //-SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  logic fp_arb_req[NUM_REQ];  // Requests for fixed priority arbiter
-  logic fp_arb_gnt[NUM_REQ];  // Grants from fixed priority arbiter
+  logic [NUM_REQ-1:0] fp_arb_req;  // Requests for fixed priority arbiter
+  logic [NUM_REQ-1:0] fp_arb_gnt;  // Grants from fixed priority arbiter
 
   logic [$clog2(NUM_REQ)-1:0] index_o;  // Index of granted request
 
