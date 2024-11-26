@@ -14,9 +14,9 @@ module reg_gnt_ckr #(
 ) (
     input logic pl_valid_i,
 
-    input logic                 jump_i,
-    input logic [$clog(NR)-1:0] rd_i,      
-    input logic [       NR-1:0] reg_req_i,
+    input logic                  jump_i,
+    input logic [$clog2(NR)-1:0] rd_i,
+    input logic [        NR-1:0] reg_req_i,
 
     input  logic [NR-1:0] locks_i,
     output logic [NR-1:0] locks_o,
@@ -40,10 +40,22 @@ module reg_gnt_ckr #(
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
+  always_comb arb_req_o = pl_valid_i & ~(|(locks_i & reg_req_i));
+
   always_comb begin
-    arb_req_o = pl_valid_i & (~locks_i & reg_req_i == reg_req_i);
-    locks_o = pl_valid_i ? (jump_i ? '1 : (locks_i | (|rd_i << rd_i))) : locks_i;
+    logic [NR-1:0] locks_mask;
+    locks_mask = '0;
+    locks_o = locks_i;
+    if (pl_valid_i) begin
+      if (jump_i) begin
+        locks_o = '1;
+      end else begin
+        locks_mask[rd_i] = |rd_i;
+        locks_o = locks_i | locks_mask;
+      end
+    end
   end
+
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
