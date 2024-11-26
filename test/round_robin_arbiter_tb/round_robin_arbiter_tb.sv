@@ -9,7 +9,7 @@ See LICENSE file in the project root for full license information
 
 module round_robin_arbiter_tb;
 
-  `define ENABLE_DUMPFILE 
+  // `define ENABLE_DUMPFILE 0
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
@@ -22,13 +22,13 @@ module round_robin_arbiter_tb;
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  localparam int NUM_REQ = 4;
+  localparam int NumReq = 4;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  typedef logic [NUM_REQ-1:0] n_req_gnt;
+  typedef logic [NumReq-1:0] n_req_gnt;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -66,7 +66,7 @@ module round_robin_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   round_robin_arbiter #(
-      .NUM_REQ(NUM_REQ)
+      .NUM_REQ(NumReq)
   ) u_rra_tb_1 (
       .arst_ni,
       .clk_i,
@@ -84,7 +84,7 @@ module round_robin_arbiter_tb;
     arst_ni <= 0;
     @(posedge clk_i);
     arst_ni <= 1;
-  endtask 
+  endtask
 
   task automatic start_random_driver();
     @(posedge clk_i);
@@ -94,6 +94,7 @@ module round_robin_arbiter_tb;
           @(posedge clk_i);
           allow_i <= '1;
           req_i   <= 'b1101;
+          @(negedge clk_i);
           n_sent++;
         end
       end
@@ -104,10 +105,10 @@ module round_robin_arbiter_tb;
     fork
       forever begin
         @(posedge clk_i);
-        $display("sim: [%.1f], rotation: %d", $time, n_sent);
-        $display("requests allowed: %b", allow_i);
-        $display("requests profile: %b", req_i);
-        $display("grants profile: %b", gnt_o);
+        $write("sim: [%.2t]\tclk_num: %03d\t", $realtime, n_sent);
+        $write("requests allowed: %0d\t", allow_i);
+        $write("requests profile: 0b%b\t", req_i);
+        $write("grants profile: 0b%b \n", gnt_o);
       end
     join_none
   endtask

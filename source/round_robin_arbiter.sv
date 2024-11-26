@@ -46,7 +46,7 @@ module round_robin_arbiter #(
   always_comb final_rot_index = (NUM_REQ - rot_index) % NUM_REQ;
 
   // Calculate the next rotation index
-  always_comb rot_index_next = (1 + rot_index) % NUM_REQ;
+  always_comb rot_index_next = (1 + index_o) % NUM_REQ;
 
   // Enable latch when any grant is active
   always_comb rot_index_latch_en = |gnt_o;
