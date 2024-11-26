@@ -23,6 +23,7 @@ help:
 	@echo -e "\033[1;32mmake simulate TOP=<top_module_name>\033[0m open new or existing rtl design"
 	@echo -e "\033[1;32mmake lint\033[0m for linting"
 	@echo -e "\033[1;32mmake sta RTL=<module_name>\033[0m to run static timing analysis @ 100MHz clk_i"
+	@echo -e "\033[1;32mmake update_doc_list\033[0m to update the documents"
 
 #########################################################################################
 # VARIABLES
