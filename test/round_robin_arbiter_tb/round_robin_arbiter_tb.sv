@@ -46,8 +46,12 @@ module round_robin_arbiter_tb;
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  int n_sent = 0;
-  int grant_iter;
+  int tx_counter = 0;
+  event req_gnt_event [NumReq-1:0];
+  int outage_counter;
+  int requester_threshold = 1000;
+  bit [NumReq-1:0] req_satisfied = '0;
+  int rg_count [NumReq];
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-INTERFACES
@@ -60,7 +64,7 @@ module round_robin_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-
+  
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,22 +84,23 @@ module round_robin_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   task automatic apply_reset();
-    @(posedge clk_i);
+    @(posedge clk_i); #1ns;
     arst_ni <= 0;
-    @(posedge clk_i);
+    @(posedge clk_i); #1ns;
     arst_ni <= 1;
   endtask
 
   task automatic start_random_driver();
+    outage_counter = 0;
     @(posedge clk_i);
     fork
       begin
         forever begin
-          @(posedge clk_i);
-          allow_i <= '1;
-          req_i   <= 'b1101;
+          @(posedge clk_i); 
+          allow_i <= $urandom_range(0, 99) > 2; // 5% Outage Probability
+          req_i   <= $urandom;
           @(negedge clk_i);
-          n_sent++;
+          tx_counter++;
         end
       end
     join_none
@@ -104,24 +109,39 @@ module round_robin_arbiter_tb;
   task automatic start_in_out_monitor();
     fork
       forever begin
-        @(posedge clk_i);
-        $write("sim: [%.2t]\tclk_num: %03d\t", $realtime, n_sent);
-        $write("requests allowed: %0d\t", allow_i);
-        $write("requests profile: 0b%b\t", req_i);
-        $write("grants profile: 0b%b \n", gnt_o);
+        @(negedge clk_i);
+        // $write("sim_time: [%.3t]\t", $realtime);
+        // $write("requests allowed: %0d\t", allow_i);
+        // $write("requests profile: 0b%b\t", req_i);
+        // $write("grants profile: 0b%b \n", gnt_o);
+
+        if (allow_i & arst_ni) ->req_gnt_event[chk_req_gnt(gnt_o)];
+        else if (~allow_i) outage_counter++;
       end
     join_none
   endtask
 
+  function automatic int chk_req_gnt(n_req_gnt granted);
+    for (int i = 0; i < NumReq; i++) begin
+      if (granted[i] === 1) return i;
+    end
+    
+  endfunction
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SEQUENTIALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-
+ 
+  for (genvar i = 0; i < NumReq ; i++) begin : g_req_gnt_count_forks
+    always @(req_gnt_event[i]) begin
+      rg_count[i] = rg_count[i] + 1;
+      if (rg_count[i] == requester_threshold) req_satisfied[i] = 1;
+    end
+  end 
+ 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-PROCEDURALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  int test_sent;
 
   initial begin  // main initial
     start_clk_i();
@@ -130,20 +150,32 @@ module round_robin_arbiter_tb;
     start_in_out_monitor();
   end
 
-  // initial begin
-  //   #105ns;
-  //   apply_reset();
-  //   $display("[%.1f] Sent in a reset XD", $time);
-  // end
-
   initial begin
-    test_sent = 20;
     forever begin
       @(posedge clk_i);
-      if (n_sent == test_sent) begin
-        $display("Simulation: %0d", n_sent);
+      if (&req_satisfied) begin
+        $write("Outage: %3d times\t", outage_counter);
+        $write("total cycles ran: %3d\n", tx_counter);
+        foreach (rg_count[i]) begin
+          $write("Requester %3d called: %3d times\n", i, rg_count[i]);
+        end
+        $write("Simulation Done\n");
+        result_print(&req_satisfied, "Preservation of Arbitration Fairness before timeout");
         $finish;
       end
+    end
+  end
+
+  initial begin
+    #1ms;
+    result_print(&req_satisfied, "Preservation of Arbitration Fairness before timeout");
+    $fatal(0, "TIMEOUT");
+    $finish;
+  end
+
+  initial begin
+    foreach(rg_count[i]) begin
+      rg_count[i] = 0;
     end
   end
 
