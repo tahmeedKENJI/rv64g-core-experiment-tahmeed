@@ -49,7 +49,7 @@ module round_robin_arbiter_tb;
   int tx_counter = 0;
   event req_gnt_event[NumReq];
   int outage_counter;
-  int requester_threshold = 1000;
+  int requester_threshold = 5000;
   bit [NumReq-1:0] req_satisfied = '0;
   int rg_count[NumReq];
 
@@ -99,7 +99,7 @@ module round_robin_arbiter_tb;
       begin
         forever begin
           @(posedge clk_i);
-          allow_i <= $urandom_range(0, 99) > 2;  // 5% Outage Probability
+          allow_i <= $urandom_range(0, 99) > 2;  // 2% Outage Probability
           req_i   <= $urandom;
           @(negedge clk_i);
           tx_counter++;
@@ -136,8 +136,11 @@ module round_robin_arbiter_tb;
 
   for (genvar i = 0; i < NumReq; i++) begin : g_req_gnt_count_forks
     always @(req_gnt_event[i]) begin
-      rg_count[i] = rg_count[i] + 1;
-      if (rg_count[i] == requester_threshold) req_satisfied[i] = 1;
+      rg_count[i] <= rg_count[i] + 1;
+      if (rg_count[i] == requester_threshold) begin
+        req_satisfied[i] <= 1;
+        result_print(1, $sformatf("Requester %4d Grants Quota Met", i + 1));
+      end
     end
   end
 
@@ -170,6 +173,11 @@ module round_robin_arbiter_tb;
 
   initial begin
     #1ms;
+    $write("Outage: %3d times\t", outage_counter);
+    $write("total cycles ran: %3d\n", tx_counter);
+    foreach (rg_count[i]) begin
+      $write("Requester %3d called: %3d times\n", i, rg_count[i]);
+    end
     result_print(&req_satisfied, "Preservation of Arbitration Fairness before timeout");
     $fatal(0, "TIMEOUT");
     $finish;
