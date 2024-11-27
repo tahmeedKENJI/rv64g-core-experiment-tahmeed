@@ -47,11 +47,11 @@ module round_robin_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   int tx_counter = 0;
-  event req_gnt_event [NumReq-1:0];
+  event req_gnt_event[NumReq];
   int outage_counter;
   int requester_threshold = 1000;
   bit [NumReq-1:0] req_satisfied = '0;
-  int rg_count [NumReq];
+  int rg_count[NumReq];
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-INTERFACES
@@ -64,7 +64,7 @@ module round_robin_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,9 +84,11 @@ module round_robin_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   task automatic apply_reset();
-    @(posedge clk_i); #1ns;
+    @(posedge clk_i);
+    #1ns;
     arst_ni <= 0;
-    @(posedge clk_i); #1ns;
+    @(posedge clk_i);
+    #1ns;
     arst_ni <= 1;
   endtask
 
@@ -96,8 +98,8 @@ module round_robin_arbiter_tb;
     fork
       begin
         forever begin
-          @(posedge clk_i); 
-          allow_i <= $urandom_range(0, 99) > 2; // 5% Outage Probability
+          @(posedge clk_i);
+          allow_i <= $urandom_range(0, 99) > 2;  // 5% Outage Probability
           req_i   <= $urandom;
           @(negedge clk_i);
           tx_counter++;
@@ -115,7 +117,7 @@ module round_robin_arbiter_tb;
         // $write("requests profile: 0b%b\t", req_i);
         // $write("grants profile: 0b%b \n", gnt_o);
 
-        if (allow_i & arst_ni) ->req_gnt_event[chk_req_gnt(gnt_o)];
+        if (allow_i & arst_ni)->req_gnt_event[chk_req_gnt(gnt_o)];
         else if (~allow_i) outage_counter++;
       end
     join_none
@@ -125,20 +127,20 @@ module round_robin_arbiter_tb;
     for (int i = 0; i < NumReq; i++) begin
       if (granted[i] === 1) return i;
     end
-    
+
   endfunction
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SEQUENTIALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
- 
-  for (genvar i = 0; i < NumReq ; i++) begin : g_req_gnt_count_forks
+
+  for (genvar i = 0; i < NumReq; i++) begin : g_req_gnt_count_forks
     always @(req_gnt_event[i]) begin
       rg_count[i] = rg_count[i] + 1;
       if (rg_count[i] == requester_threshold) req_satisfied[i] = 1;
     end
-  end 
- 
+  end
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-PROCEDURALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +176,7 @@ module round_robin_arbiter_tb;
   end
 
   initial begin
-    foreach(rg_count[i]) begin
+    foreach (rg_count[i]) begin
       rg_count[i] = 0;
     end
   end
