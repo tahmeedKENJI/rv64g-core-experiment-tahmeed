@@ -59,10 +59,12 @@ endif
 build:
 	@mkdir -p build
 	@echo "*" > build/.gitignore
+	@git add build
 
 log:
 	@mkdir -p log
 	@echo "*" > log/.gitignore
+	@git add log
 
 submodules/sv-genesis/tb_model.sv:
 	@git submodule update --init --recursive --depth 1
@@ -229,6 +231,7 @@ update_doc_list: submodules/documenter/sv_documenter.py
 	@$(eval RTL_LIST = $(shell find source -name "*.sv"))
 	@echo "# List of Modules" > document/rtl/modules.md
 	@$(foreach file, $(RTL_LIST), make -s gen_doc FILE=$(file);)
+	@git add document/rtl
 
 submodules/documenter/sv_documenter.py:
 	@git submodule update --init --recursive --depth 1
