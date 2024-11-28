@@ -37,6 +37,7 @@ ci_simulate fixed_priority_arbiter_tb default
 ci_simulate pipeline_split_tb default
 ci_simulate pipeline_tb default
 ci_simulate priority_encoder_tb default
+ci_simulate reg_gnt_ckr_tb default
 ci_simulate rotating_xbar_tb default
 ci_simulate round_robin_arbiter_tb default
 ci_simulate xbar_tb default
