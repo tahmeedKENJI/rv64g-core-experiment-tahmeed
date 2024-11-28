@@ -1,7 +1,6 @@
 /*
-The rv64g_instr_launcher module manages the instructions heading for execution. It processes
-temporarily store instructions, checks register availability, and launches them for execution
-avoiding hazzards.
+The rv64g_instr_launcher module manages the instructions heading for execution. It temporarily store
+instructions, checks register availability, and launches them for execution avoiding hazzards.
 
 Author: Foez Ahmed (https://github.com/foez-ahmed)
 This file is part of DSInnovators:rv64g-core
@@ -77,6 +76,8 @@ module rv64g_instr_launcher #(
   assign instr_out_o       = pl_outs[gnt_idx];
   assign instr_out_valid_o = arb_req[gnt_idx];
 
+  assign pl_outs_ready     = arb_gnt;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,13 +121,12 @@ module rv64g_instr_launcher #(
   for (genvar i = 0; i < NOS + 1; i++) begin : g_ckeckers
     reg_gnt_ckr #() u_reg_gnt_ckr (
         .pl_valid_i(pl_outs_valid[i]),
-        .pl_ready_o(pl_outs_ready[i]),
         .jump_i(pl_outs[i].jump),
+        .rd_i(pl_outs[i].rd),
         .reg_req_i(pl_outs[i].reg_req),
         .locks_i(locks[i]),
         .locks_o(locks[i+1]),
-        .arb_req_o(arb_req[i]),
-        .arb_gnt_i(arb_gnt[i])
+        .arb_req_o(arb_req[i])
     );
   end
 
