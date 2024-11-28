@@ -27,8 +27,10 @@ module round_robin_arbiter #(
   //-SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  logic [NUM_REQ-1:0] fp_arb_req;  // Requests for fixed priority arbiter
-  logic [NUM_REQ-1:0] fp_arb_gnt;  // Grants from fixed priority arbiter
+  logic [        NUM_REQ-1:0] req_inside;  // gating requests based on reset
+
+  logic [        NUM_REQ-1:0] fp_arb_req;  // Requests for fixed priority arbiter
+  logic [        NUM_REQ-1:0] fp_arb_gnt;  // Grants from fixed priority arbiter
 
   logic [$clog2(NUM_REQ)-1:0] index_o;  // Index of granted request
 
@@ -41,6 +43,9 @@ module round_robin_arbiter #(
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // gating requests
+  always_comb req_inside = arst_ni ? req_i : '0;
 
   // Calculate the final rotation index
   always_comb final_rot_index = (NUM_REQ - rot_index) % NUM_REQ;
@@ -60,7 +65,7 @@ module round_robin_arbiter #(
       .NUM_DATA  (NUM_REQ),
       .DATA_WIDTH(1)
   ) u_rotate_req (
-      .input_vector_i (req_i),       // Connect request inputs
+      .input_vector_i (req_inside),  // Connect request inputs
       .output_vector_o(fp_arb_req),  // Connect rotated request outputs
       .start_select_i (rot_index)    // Connect starting selection index
   );
