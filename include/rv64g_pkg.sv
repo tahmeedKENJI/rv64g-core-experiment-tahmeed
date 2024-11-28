@@ -219,24 +219,24 @@ package rv64g_pkg;
 
     // The `rd` is the destination register ant the `rs1`, `rs2` & `rs3` are the source registers.
     // An offset of 32 is added for the floating point registers' address.
-    logic [5:0] rd;
-    logic [5:0] rs1;
-    logic [5:0] rs2;
-    logic [5:0] rs3;
+    logic [$clog2(NUM_REGS)-1:0] rd;
+    logic [$clog2(NUM_REGS)-1:0] rs1;
+    logic [$clog2(NUM_REGS)-1:0] rs2;
+    logic [$clog2(NUM_REGS)-1:0] rs3;
 
     // The `imm` has multi-purpose such signed/unsigned immediate, shift, csr_addr, etc. based on
     // the `func`. -------- imm:64 / {fm:4,pred:4,succ:4} / shamt:6 / {uimm:5,csr:12}
-    logic [63:0] imm;
+    logic [XLEN-1:0] imm;
 
     // The `pc` hold's the physical address of the current instruction.
-    logic [63:0] pc;
+    logic [XLEN-1:0] pc;
 
     // The `jump` field is set high when the current instruction can cause branch/jump.
     logic jump;
 
     // The `reg_req` field is a flag that indicates the registers that are required for the current
     // instruction
-    logic [63:0] reg_req;
+    logic [NUM_REGS-1:0] reg_req;
 
   } decoded_instr_t;
 
