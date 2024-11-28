@@ -129,7 +129,7 @@ module round_robin_arbiter_tb;
         result_print(1, $sformatf("Requester %4d Grants Quota Met", i + 1));
       end
     end
-  end  // check for no. requests granted per requester. 
+  end  // check for no. requests granted per requester.
   // test passed when all requester quotas are met within time limit
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
