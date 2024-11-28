@@ -9,6 +9,8 @@ Licensed under the MIT License
 See LICENSE file in the project root for full license information
 */
 
+`include "rv64g_pkg.sv"
+
 module reg_gnt_ckr #(
     localparam int NR = rv64g_pkg::NUM_REGS // Number of registers
 ) (
