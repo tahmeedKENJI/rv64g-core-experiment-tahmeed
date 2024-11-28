@@ -34,7 +34,7 @@ module round_robin_arbiter #(
 
   logic [$clog2(NUM_REQ)-1:0] rot_index;  // Current rotation index
   logic [$clog2(NUM_REQ)-1:0] rot_index_next;  // Next rotation index
-  logic [$clog2(NUM_REQ)-1:0] rot_index_latch_en;  // Latch enable signal for rotation index
+  logic                       rot_index_latch_en;  // Latch enable signal for rotation index
 
   logic [$clog2(NUM_REQ)-1:0] final_rot_index;  // Final rotation index
 
