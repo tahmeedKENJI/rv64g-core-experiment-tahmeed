@@ -27,8 +27,8 @@ module round_robin_arbiter #(
   //-SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  logic fp_arb_req[NUM_REQ];  // Requests for fixed priority arbiter
-  logic fp_arb_gnt[NUM_REQ];  // Grants from fixed priority arbiter
+  logic [NUM_REQ-1:0] fp_arb_req;  // Requests for fixed priority arbiter
+  logic [NUM_REQ-1:0] fp_arb_gnt;  // Grants from fixed priority arbiter
 
   logic [$clog2(NUM_REQ)-1:0] index_o;  // Index of granted request
 
@@ -46,7 +46,7 @@ module round_robin_arbiter #(
   always_comb final_rot_index = (NUM_REQ - rot_index) % NUM_REQ;
 
   // Calculate the next rotation index
-  always_comb rot_index_next = (1 + rot_index) % NUM_REQ;
+  always_comb rot_index_next = (1 + index_o) % NUM_REQ;
 
   // Enable latch when any grant is active
   always_comb rot_index_latch_en = |gnt_o;

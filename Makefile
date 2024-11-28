@@ -21,6 +21,7 @@ help:
 	@echo -e "\033[1;32mmake tb TOP=<top_module_name>\033[0m open new or existing testbench top"
 	@echo -e "\033[1;32mmake rtl RTL=<module_name>\033[0m open new or existing rtl design"
 	@echo -e "\033[1;32mmake simulate TOP=<top_module_name>\033[0m open new or existing rtl design"
+	@echo -e "\033[1;32mmake wave\033[0m open dump.vcd from last simulation"
 	@echo -e "\033[1;32mmake lint\033[0m for linting"
 	@echo -e "\033[1;32mmake sta RTL=<module_name>\033[0m to run static timing analysis @ 100MHz clk_i"
 	@echo -e "\033[1;32mmake update_doc_list\033[0m to update the documents"
@@ -38,10 +39,18 @@ ifneq ($(TOP), )
   INC_DIR += -i $(ROOT)/test/$(TOP)
 endif
 
-CONFIG?=default
+CONFIG ?= default
 
-USER_NAME = $(shell git config user.name)
-GIT_ID = https:\/\/github.com\/$(shell git config credential.username)
+USER_NAME := $(shell git config user.name)
+GIT_ID := https:\/\/github.com\/$(shell git config credential.username)
+
+VCD ?= 0
+
+XVLOG_DEFS += --define SIMULATION
+
+ifeq ($(VCD),1)
+XVLOG_DEFS += --define ENABLE_DUMPFILE
+endif
 
 #########################################################################################
 # FILES
@@ -101,7 +110,7 @@ simulate: print_logo soft_clean xvlog xelab xsim print_logo
 
 define compile
   $(eval SUB_LIB := $(shell echo "$(wordlist 1, 25,$(COMPILE_LIB))"))
-  cd build; xvlog $(INC_DIR) -sv $(SUB_LIB) --nolog --define SIMULATION | tee -a ../log/$(TOP)_$(CONFIG).log
+  cd build; xvlog $(INC_DIR) -sv $(SUB_LIB) --nolog $(XVLOG_DEFS) | tee -a ../log/$(TOP)_$(CONFIG).log
   $(eval COMPILE_LIB := $(wordlist 26, $(words $(COMPILE_LIB)), $(COMPILE_LIB)))
   $(if $(COMPILE_LIB), $(call compile))
 endef
@@ -174,6 +183,18 @@ list_modules: soft_clean
 	@sed -i "s/.*work\.//gi" build/list;
 	@sed -i "s/(.*//gi" build/list;
 	@sed -i "s/_default.*//gi" build/list;
+
+#########################################################################################
+# GTKWAVE
+#########################################################################################
+
+build/dump.vcd:
+	@make simulate TOP=$(TOP) VCD=1
+
+.PHONY: wave
+wave: build/dump.vcd
+	@gtkwave build/dump.vcd
+
 
 #########################################################################################
 # VERIBLE
