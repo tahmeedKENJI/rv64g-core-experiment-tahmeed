@@ -144,6 +144,19 @@ define make_clk_i_100_MHz
 	echo "create_clock -name clk_i -period 10.000 [get_ports clk_i]" > TIMING_REPORTS_$(RTL)/clk_i.xdc
 endef
 
+.PHONY: schematic
+schematic: generate_flist
+	@rm -rf SCHEMATIC_$(RTL)
+	@mkdir -p SCHEMATIC_$(RTL)
+	@echo "create_project top" > SCHEMATIC_$(RTL)/$(RTL).tcl
+	@echo "set_property include_dirs ../include [current_fileset]" >> SCHEMATIC_$(RTL)/$(RTL).tcl
+	@$(foreach word, $(shell cat build/flist), echo "add_files $(word)" >> SCHEMATIC_$(RTL)/$(RTL).tcl;)
+	@echo "set_property top $(RTL) [current_fileset]" >> SCHEMATIC_$(RTL)/$(RTL).tcl
+	@echo "start_gui" >> SCHEMATIC_$(RTL)/$(RTL).tcl
+	@echo "synth_design -top $(RTL) -lint" >> SCHEMATIC_$(RTL)/$(RTL).tcl
+	@echo "synth_design -rtl -rtl_skip_mlo -name rtl_1" >> SCHEMATIC_$(RTL)/$(RTL).tcl
+	@cd build; vivado -mode tcl -source ../SCHEMATIC_$(RTL)/$(RTL).tcl
+
 .PHONY: sta
 sta: generate_flist
 	@rm -rf TIMING_REPORTS_$(RTL)
