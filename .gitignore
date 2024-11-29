@@ -3,5 +3,6 @@
 *.pb
 *.vcd
 temp_*
+SCHEMATIC_*
 TIMING_REPORTS_*
 xsim_dir
