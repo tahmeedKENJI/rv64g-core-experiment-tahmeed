@@ -33,10 +33,8 @@ package rv64g_pkg;
   // ISA
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  typedef enum logic {
-    ____ = 0,  // NOT TO KEEP
-    KEEP = 1   // TO KEEP
-  } keep_t;
+  parameter bit ____ = 0;  // NOT TO KEEP
+  parameter bit KEEP = 1;  // TO KEEP
 
   typedef enum logic [3:0] {
     NONE,  // NO IMMEDIATE
@@ -212,6 +210,10 @@ package rv64g_pkg;
     INVALID   = 'hFF
   } func_t;
 
+  func_t functions;
+
+  parameter int TOTAL_FUNCS = functions.num() - 1;
+
   typedef struct packed {
 
     // The `func` field enumerates the function that the current instruction.
@@ -240,8 +242,8 @@ package rv64g_pkg;
 
   } decoded_instr_t;
 
-  typedef enum logic [20:0] {
-    //             19:16 14    13    12    11    10    9     8     7:0
+  typedef enum logic [19:0] {
+    //             19:16 15    14    13    12    11    10    9     8     7:0
     //             IMM_  jump  frs3  frs2  frs1  frd_  xrs2  xrs1  xrd_, Function
     i_LUI       = {UIMM, ____, ____, ____, ____, ____, ____, ____, KEEP, LUI},
     i_AUIPC     = {UIMM, ____, ____, ____, ____, ____, ____, ____, KEEP, AUIPC},
@@ -402,7 +404,7 @@ package rv64g_pkg;
     i_FMV_D_X   = {NONE, ____, ____, ____, ____, KEEP, ____, KEEP, ____, FMV_D_X},
     i_INVALID   = {NONE, ____, ____, ____, ____, ____, ____, ____, ____, INVALID}
     //             IMM_  jump  frs3  frs2  frs1  frd_  xrs2  xrs1  xrd_, Function
-    //             19:16 14    13    12    11    10    9     8     7:0
+    //             19:16 15    14    13    12    11    10    9     8     7:0
   } intr_func_t;
 
 endpackage
