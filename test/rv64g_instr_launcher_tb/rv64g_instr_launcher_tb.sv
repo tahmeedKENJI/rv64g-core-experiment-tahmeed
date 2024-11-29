@@ -216,7 +216,7 @@ module rv64g_instr_launcher_tb;
   end
 
   initial begin
-    repeat (10000) @(posedge clk_i);
+    repeat (1000000) @(posedge clk_i);
     result_print(1, "Locked Registers Access Denied");
     $finish;
   end
