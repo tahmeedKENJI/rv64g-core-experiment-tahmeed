@@ -26,9 +26,14 @@ See LICENSE file in the project root for full license information
 `include "rv64g_pkg.sv"
 
 module rv64g_instr_decoder #(
+    // interger register width
+    localparam int  XLEN            = rv64g_pkg::XLEN,
     // type definition of decoded instruction
     localparam type decoded_instr_t = rv64g_pkg::decoded_instr_t
 ) (
+    // 32-bit input instruction code
+    input logic [XLEN:0] pc_i,
+
     // 32-bit input instruction code
     input logic [31:0] code_i,
 
@@ -333,6 +338,10 @@ module rv64g_instr_decoder #(
       TIMM: cmd_o.imm = timm;
       UIMM: cmd_o.imm = uimm;
     endcase
+  end
+
+  always_comb begin
+    cmd_o.pc = pc_i;
   end
 
   // can jump
