@@ -32,10 +32,12 @@ See the [ISA Manual](https://riscv.org/wp-content/uploads/2019/12/riscv-spec-201
 ## Parameters
 |Name|Type|Dimension|Default Value|Description|
 |-|-|-|-|-|
+|XLEN|int||rv64g_pkg::XLEN| interger register width|
 |decoded_instr_t|type||rv64g_pkg::decoded_instr_t| type definition of decoded instruction|
 
 ## Ports
 |Name|Direction|Type|Dimension|Description|
 |-|-|-|-|-|
+|pc_i|input|logic [XLEN:0]|| 32-bit input instruction code|
 |code_i|input|logic [31:0]|| 32-bit input instruction code|
 |cmd_o|output|decoded_instr_t|| Output decoded instruction|
