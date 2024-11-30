@@ -14,7 +14,7 @@ jobs:
     - name: Check Last Review
       shell: bash
       run: |
-        make check_source_commit_diff
+        make pending_reviews
 
     - name: Fail if Missing Review
       shell: bash
