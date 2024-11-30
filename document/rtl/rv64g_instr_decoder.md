@@ -38,6 +38,6 @@ See the [ISA Manual](https://riscv.org/wp-content/uploads/2019/12/riscv-spec-201
 ## Ports
 |Name|Direction|Type|Dimension|Description|
 |-|-|-|-|-|
-|pc_i|input|logic [XLEN:0]|| 32-bit input instruction code|
+|pc_i|input|logic [XLEN-1:0]|| 32-bit input instruction code|
 |code_i|input|logic [31:0]|| 32-bit input instruction code|
 |cmd_o|output|decoded_instr_t|| Output decoded instruction|

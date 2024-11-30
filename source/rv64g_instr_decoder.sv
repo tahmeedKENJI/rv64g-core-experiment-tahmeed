@@ -32,7 +32,7 @@ module rv64g_instr_decoder #(
     localparam type decoded_instr_t = rv64g_pkg::decoded_instr_t
 ) (
     // 32-bit input instruction code
-    input logic [XLEN:0] pc_i,
+    input logic [XLEN-1:0] pc_i,
 
     // 32-bit input instruction code
     input logic [31:0] code_i,

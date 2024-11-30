@@ -269,9 +269,10 @@ update_source_commit: source_change_logs
 	@- $(foreach file, $(RTLs), grep -s -r -w "$(file)" source_change_logs >> temp_source_change_logs;)
 	@mv temp_source_change_logs source_change_logs
 
-.PHONY: pending_reviews
-pending_reviews:
+.PHONY: pending_source_reviews
+pending_source_reviews:
 	@rm -rf temp_source_commit_diffs
+	@touch temp_source_commit_diffs
 	@$(eval RTLs = $(shell find source -name "*.sv" | sed "s/.*\///g" | sed "s/\.sv//g"))
 	@$(foreach file, $(RTLs), $(call source_commit_diff,$(file));)
 	@cat temp_source_commit_diffs

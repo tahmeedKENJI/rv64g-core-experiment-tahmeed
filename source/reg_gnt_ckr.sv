@@ -12,7 +12,7 @@ See LICENSE file in the project root for full license information
 `include "rv64g_pkg.sv"
 
 module reg_gnt_ckr #(
-    parameter int NR = rv64g_pkg::NUM_REGS // Number of registers
+    parameter int NR = rv64g_pkg::NUM_REGS  // Number of registers
 ) (
     // 1 for valid instruction from pipeline.
     input logic pl_valid_i,
