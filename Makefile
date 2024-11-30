@@ -146,7 +146,7 @@ define make_clk_i_100_MHz
 endef
 
 .PHONY: schematic
-schematic: source_change_logs.txt generate_flist
+schematic: generate_flist
 	@rm -rf SCHEMATIC_$(RTL)
 	@mkdir -p SCHEMATIC_$(RTL)
 	@echo "create_project top" > SCHEMATIC_$(RTL)/$(RTL).tcl
@@ -158,7 +158,6 @@ schematic: source_change_logs.txt generate_flist
 	@echo "synth_design -rtl -rtl_skip_mlo -name rtl_1" >> SCHEMATIC_$(RTL)/$(RTL).tcl
 	@cd build; vivado -mode tcl -source ../SCHEMATIC_$(RTL)/$(RTL).tcl
 	@make -s soft_clean
-	@make -s update_log RTL=$(RTL)
 
 .PHONY: sta
 sta: generate_flist
@@ -260,8 +259,8 @@ submodules/documenter/sv_documenter.py:
 source_change_logs.txt:
 	@touch source_change_logs.txt
 
-.PHONY: update_log
-update_log: source_change_logs.txt
+.PHONY: update_source_log
+update_source_log: source_change_logs.txt
 	@sed -e "s/^$(RTL) .*//g" -i source_change_logs.txt
 	@git log -1 source/$(RTL).sv | grep -E "commit " | sed "s/commit /$(RTL) /g" \
 		>> source_change_logs.txt
