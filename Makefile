@@ -146,7 +146,7 @@ define make_clk_i_100_MHz
 endef
 
 .PHONY: schematic
-schematic: generate_flist
+schematic: source_change_logs.txt generate_flist
 	@rm -rf SCHEMATIC_$(RTL)
 	@mkdir -p SCHEMATIC_$(RTL)
 	@echo "create_project top" > SCHEMATIC_$(RTL)/$(RTL).tcl
@@ -157,6 +157,8 @@ schematic: generate_flist
 	@echo "synth_design -top $(RTL) -lint" >> SCHEMATIC_$(RTL)/$(RTL).tcl
 	@echo "synth_design -rtl -rtl_skip_mlo -name rtl_1" >> SCHEMATIC_$(RTL)/$(RTL).tcl
 	@cd build; vivado -mode tcl -source ../SCHEMATIC_$(RTL)/$(RTL).tcl
+	@make -s soft_clean
+	@make -s update_log RTL=$(RTL)
 
 .PHONY: sta
 sta: generate_flist
@@ -177,6 +179,7 @@ sta: generate_flist
 	@echo "report_timing -delay_type max -slack_lesser_than 0 -max_paths 100 -file ../TIMING_REPORTS_$(RTL)/failing_paths.rpt" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
 	@echo "exit" >> TIMING_REPORTS_$(RTL)/$(RTL).tcl
 	@cd build; vivado -mode batch -source ../TIMING_REPORTS_$(RTL)/$(RTL).tcl
+	@make -s soft_clean
 
 .PHONY: generate_flist
 generate_flist: list_modules
@@ -249,6 +252,22 @@ update_doc_list: submodules/documenter/sv_documenter.py
 
 submodules/documenter/sv_documenter.py:
 	@git submodule update --init --recursive --depth 1
+
+#########################################################################################
+# RTL CHANGE LOG
+#########################################################################################
+
+source_change_logs.txt:
+	@touch source_change_logs.txt
+
+.PHONY: update_log
+update_log: source_change_logs.txt
+	@sed -e "s/^$(RTL) .*//g" -i source_change_logs.txt
+	@git log -1 source/$(RTL).sv | grep -E "commit " | sed "s/commit /$(RTL) /g" \
+		>> source_change_logs.txt
+	@sort source_change_logs.txt > temp_source_change_logs.txt
+	@grep -v '^$$' temp_source_change_logs.txt > source_change_logs.txt
+	@rm temp_source_change_logs.txt
 
 #########################################################################################
 # MISCELLANEOUS
