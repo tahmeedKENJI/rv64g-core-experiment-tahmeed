@@ -256,17 +256,30 @@ submodules/documenter/sv_documenter.py:
 # RTL CHANGE LOG
 #########################################################################################
 
-source_change_logs.txt:
-	@touch source_change_logs.txt
+source_change_logs:
+	@touch source_change_logs
 
-.PHONY: update_source_log
-update_source_log: source_change_logs.txt
-	@sed -e "s/^$(RTL) .*//g" -i source_change_logs.txt
+.PHONY: update_source_commit
+update_source_commit: source_change_logs
+	@sed -e "s/^$(RTL) .*//g" -i source_change_logs
 	@git log -1 source/$(RTL).sv | grep -E "commit " | sed "s/commit /$(RTL) /g" \
-		>> source_change_logs.txt
-	@sort source_change_logs.txt > temp_source_change_logs.txt
-	@grep -v '^$$' temp_source_change_logs.txt > source_change_logs.txt
-	@rm temp_source_change_logs.txt
+		>> source_change_logs
+	@$(eval RTLs = $(shell find source -name "*.sv" | sed "s/.*\///g" | sed "s/\.sv//g"))
+	@rm -rf temp_source_change_logs
+	@- $(foreach file, $(RTLs), grep -s -r -w "$(file)" source_change_logs >> temp_source_change_logs;)
+	@mv temp_source_change_logs source_change_logs
+
+.PHONY: check_source_commit_diff
+check_source_commit_diff:
+	@rm -rf temp_source_commit_diffs
+	@$(eval RTLs = $(shell find source -name "*.sv" | sed "s/.*\///g" | sed "s/\.sv//g"))
+	@$(foreach file, $(RTLs), $(call source_commit_diff,$(file));)
+	@cat temp_source_commit_diffs
+
+define source_commit_diff
+	$(eval hash := $(shell git log -1 $(shell find source -name "$(1).sv") | grep -e "commit " | sed "s/commit /$(1) /g"))
+	grep -r "$(hash)" source_change_logs > /dev/null || echo "$(hash)" >> temp_source_commit_diffs
+endef
 
 #########################################################################################
 # MISCELLANEOUS

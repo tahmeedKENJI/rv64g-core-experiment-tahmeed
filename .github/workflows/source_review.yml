@@ -1,0 +1,23 @@
+name: source_review
+
+on:
+  push:
+    branches: []
+
+jobs:
+  Verible_Verilog_Lint:
+    runs-on: [make, vivado]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check Last Review
+      shell: bash
+      run: |
+        make check_source_commit_diff
+
+    - name: Fail if Missing Review
+      shell: bash
+      run: |
+        cat check_source_commit_diff
+        [[ -s temp_source_commit_diffs ]] && exit 1 || exit 0
