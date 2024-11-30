@@ -5,7 +5,7 @@ on:
     branches: []
 
 jobs:
-  Verible_Verilog_Lint:
+  source_review:
     runs-on: [make, vivado]
 
     steps:
@@ -19,5 +19,5 @@ jobs:
     - name: Fail if Missing Review
       shell: bash
       run: |
-        cat check_source_commit_diff
+        cat temp_source_commit_diffs
         [[ -s temp_source_commit_diffs ]] && exit 1 || exit 0
