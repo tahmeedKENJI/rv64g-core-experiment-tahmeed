@@ -12,9 +12,9 @@ See LICENSE file in the project root for full license information
 `include "rv64g_pkg.sv"
 
 module rv64g_instr_launcher #(
-    parameter type decoded_instr_t = rv64g_pkg::decoded_instr_t,  // Type for decoded instructions
-    parameter int NR = rv64g_pkg::NUM_REGS,  // Number of registers
-    parameter type locks_t = logic [NR-1:0]  // Type for lock signals
+    localparam type decoded_instr_t = rv64g_pkg::decoded_instr_t,  // Type for decoded instructions
+    localparam int NR = rv64g_pkg::NUM_REGS,  // Number of registers
+    localparam type locks_t = logic [NR-1:0]  // Type for lock signals
 ) (
     input logic arst_ni,  // Asynchronous reset, active low
     input logic clk_i,    // Clock input
