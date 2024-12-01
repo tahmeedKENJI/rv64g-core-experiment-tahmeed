@@ -9,8 +9,6 @@ See LICENSE file in the project root for full license information
 
 module round_robin_arbiter_tb;
 
-  // `define ENABLE_DUMPFILE 0
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +112,7 @@ module round_robin_arbiter_tb;
   task automatic start_in_out_monitor();
     fork
       forever begin
-        @(negedge clk_i);
+        @(posedge clk_i);
         // $write("sim_time: [%.3t]\t", $realtime);
         // $write("requests allowed: %0d\t", allow_i);
         // $write("requests profile: 0b%b\t", req_i);

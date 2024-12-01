@@ -25,16 +25,15 @@ module encoder_tb;
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // parameter for number of input wires to encoder module
-  parameter int NUM_WIRE = 16;
+  localparam int NumWire = 16;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // apply typedef to repetitive code for readability
-  typedef logic [NUM_WIRE-1:0] n_input;
-  typedef logic [$clog2(NUM_WIRE)-1:0] n_output;
+  typedef logic [NumWire-1:0] n_input;
+  typedef logic [$clog2(NumWire)-1:0] n_output;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -63,7 +62,7 @@ module encoder_tb;
 
   // assign buses to the correct encoder ports
   encoder #(
-      .NUM_WIRE(NUM_WIRE)
+      .NUM_WIRE(NumWire)
   ) u_encoder (
       .wire_in,
       .index_o,
@@ -100,7 +99,7 @@ module encoder_tb;
     fork
       forever begin
         @(posedge clk_i);
-        wire_in <= ($urandom_range(0, 1) << $urandom_range(0, NUM_WIRE - 1));
+        wire_in <= ($urandom_range(0, 1) << $urandom_range(0, NumWire - 1));
         tx_total++;
       end
     join_none
@@ -113,7 +112,7 @@ module encoder_tb;
   initial begin
     forever begin
       @(posedge clk_i);
-      if (tx_total == 100 * NUM_WIRE) begin
+      if (tx_total == 100 * NumWire) begin
         $display("END OF SIMULATION B8TCH");
         $display("Number of total runs: %d", tx_total);
         result_print(in_out_ok, "Data Encoding");

@@ -32,3 +32,4 @@ accordingly, making it ideal for systems where fair resource distribution is cru
 |allow_i|input|logic||Allow Request|
 |req_i|input|logic [NUM_REQ-1:0]||Request signals|
 |gnt_o|output|logic [NUM_REQ-1:0]||Grant signals|
+|gnt_found_o|output|logic||Grant Found|

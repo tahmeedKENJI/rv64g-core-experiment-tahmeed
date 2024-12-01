@@ -9,8 +9,6 @@ See LICENSE file in the project root for full license information
 
 module fixed_priority_arbiter_tb;
 
-  //`define ENABLE_DUMPFILE
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,13 +20,13 @@ module fixed_priority_arbiter_tb;
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  parameter int NUM_REQ = 4;  // number of requests
+  localparam int NumReq = 4;  // number of requests
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  typedef logic [NUM_REQ-1:0] n_rqst_gnt;  // typedef for request_in and grant_out
+  typedef logic [NumReq-1:0] n_rqst_gnt;  // typedef for request_in and grant_out
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -55,7 +53,7 @@ module fixed_priority_arbiter_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   fixed_priority_arbiter #(
-      .NUM_REQ(NUM_REQ)
+      .NUM_REQ(NumReq)
   ) u_fpa_1 (
       .allow_i,
       .req_i,
@@ -71,7 +69,7 @@ module fixed_priority_arbiter_tb;
       forever begin
         @(posedge clk_i);
         allow_i <= $urandom();
-        req_i   <= $urandom_range(0, ((2 ** NUM_REQ) - 1));
+        req_i   <= $urandom();
         n_sent++;
       end
     join_none
@@ -82,30 +80,22 @@ module fixed_priority_arbiter_tb;
     fork
       forever begin
         @(posedge clk_i);
-        #1ns;
-        // check the index of msb to verify priority arbitration
         if (allow_i) begin
-          if ((priority_idx(req_i, NUM_REQ) === priority_idx(gnt_o, NUM_REQ))) begin
-            // $display("rqst = %b, gnt = %b", req_i, gnt_o);
-            // result_print(!priority_violation_flag, "Requester Priority Violation Check");
+          if ((priority_idx(req_i) === priority_idx(gnt_o))) begin
           end else begin
             priority_violation_flag = 1;
-            // $display("rqst = %b, gnt = %b", req_i, gnt_o);
-            // result_print(!priority_violation_flag, "Requester Priority Violation Check");
             ->end_trigger;
           end
         end else if (allow_i === 0 && gnt_o !== 0) begin
           priority_violation_flag = 1;
-          // $display("rqst = %b, gnt = %b", req_i, gnt_o);
-          // result_print(!priority_violation_flag, "Requester Priority Violation Check");
           ->end_trigger;
         end
       end
     join_none
   endtask  // monitors the input and output data in the mailbox for verification
 
-  function automatic integer priority_idx(n_rqst_gnt data_x, int n_req);
-    for (integer i = 0; i < n_req; i++) begin
+  function automatic integer priority_idx(n_rqst_gnt data_x);
+    for (integer i = 0; i < NumReq; i++) begin
       if (data_x[i] === 1) return i;
     end
   endfunction  // software function for returning index of msb
@@ -142,13 +132,5 @@ module fixed_priority_arbiter_tb;
       end
     join
   end
-
-  // initial begin
-  //   #1ms;
-  //   $display("Number of Transactions [%0d] Completed out of [%0d]", n_sent, rqrd_transactions);
-  //   result_print(!priority_violation_flag, "Requester Priority Violation Check");
-  //   $fatal("FATAL TIMEOUT");
-  //   $finish;
-  // end
 
 endmodule

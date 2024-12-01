@@ -27,3 +27,4 @@ results if multiple inputs are active simultaneously.
 |-|-|-|-|-|
 |wire_in|input|logic [NUM_WIRE-1:0]||Input vector of wires|
 |index_o|output|logic [$clog2(NUM_WIRE)-1:0]||Output index of the highest priority wire|
+|index_valid_o|output|logic||Output is valid|

@@ -20,14 +20,14 @@ module priority_encoder_tb;
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  parameter int NUM_WIRE = 16;
+  localparam int NumWire = 16;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  typedef logic [NUM_WIRE-1:0] n_wire;
-  typedef logic [$clog2(NUM_WIRE)-1:0] n_encode;
+  typedef logic [NumWire-1:0] n_wire;
+  typedef logic [$clog2(NumWire)-1:0] n_encode;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
@@ -52,7 +52,7 @@ module priority_encoder_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   priority_encoder #(
-      .NUM_WIRE(NUM_WIRE)
+      .NUM_WIRE(NumWire)
   ) u_pen1 (
       .wire_in,
       .index_o,
@@ -96,7 +96,7 @@ module priority_encoder_tb;
   endtask
 
   function automatic integer priority_idx();
-    for (integer i = 0; i < NUM_WIRE; i++) begin
+    for (integer i = 0; i < NumWire; i++) begin
       if (wire_in[i] === '1) return i;
     end
   endfunction

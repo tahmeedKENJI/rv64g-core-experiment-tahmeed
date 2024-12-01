@@ -11,8 +11,6 @@ See LICENSE file in the project root for full license information
 
 module reg_gnt_ckr_tb;
 
-  //`define ENABLE_DUMPFILE
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +22,7 @@ module reg_gnt_ckr_tb;
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  parameter int NR = rv64g_pkg::NUM_REGS;
+  localparam int NR = rv64g_pkg::NUM_REGS;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
@@ -41,21 +39,21 @@ module reg_gnt_ckr_tb;
   `CREATE_CLK(clk_i, 4ns, 6ns)
 
   // RTL Input
-  logic      pl_valid_i;  // pipeline instruction validity
-  logic      jump_i;  // if 1, lock all registers
+  logic pl_valid_i;  // pipeline instruction validity
+  logic jump_i;  // if 1, lock all registers
   logicLogNR rd_i;  // destination register index
-  logicNR    reg_req_i;  // instruction source register requirement
-  logicNR    locks_i;  // register locking status input
+  logicNR reg_req_i;  // instruction source register requirement
+  logicNR locks_i;  // register locking status input
 
   // RTL Output
-  logicNR    locks_o;  // register locking status output
-  logic      arb_req_o;  // enable arbitration if all instruction source registers are unlocked
+  logicNR locks_o;  // register locking status output
+  logic arb_req_o;  // enable arbitration if all instruction source registers are unlocked
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  int   outage_counter;
+  int outage_counter;
   event jump_violation;
   event arb_violation[2];
   event rd_locking_violation;
@@ -86,20 +84,20 @@ module reg_gnt_ckr_tb;
     fork
       forever begin
         @(posedge clk_i);
-        pl_valid_i <= $urandom_range(0, 99) > 10; // 10% instruction outage prob.
-        jump_i     <= $urandom_range(0, 99) < 10; // 10% jump calls
+        pl_valid_i <= $urandom_range(0, 99) > 10;  // 10% instruction outage prob.
+        jump_i     <= $urandom_range(0, 99) < 10;  // 10% jump calls
         rd_i       <= $urandom;
-        reg_req_i  <= 1 << $urandom_range(0, NR-1) | 1 << $urandom_range(0, NR-1);
+        reg_req_i  <= 1 << $urandom_range(0, NR - 1) | 1 << $urandom_range(0, NR - 1);
         locks_i    <= $urandom;
       end
     join_none
   endtask
 
   task automatic start_in_out_mon();
-  outage_counter = 0;
+    outage_counter = 0;
     fork
       forever begin
-        @(posedge clk_i); #500ps;
+        @(posedge clk_i);
         // $write("reg_req_i: 0b%b\n", reg_req_i);
         // $write("locks_i: 0b%b\n", locks_i);
         // $write("rd_i: %03d\t pl_valid_i: 0b%b\t jump_i: 0b%b\n", rd_i, pl_valid_i, jump_i);
@@ -107,16 +105,16 @@ module reg_gnt_ckr_tb;
         // $write("arb_req_o: 0b%b\n\n", arb_req_o);
 
         if (~pl_valid_i) begin
-          if (arb_req_o) ->arb_violation[0];
+          if (arb_req_o)->arb_violation[0];
           else outage_counter++;
         end else begin
           if (jump_i) begin
-            if (~(&locks_o)) ->jump_violation;
+            if (~(&locks_o))->jump_violation;
           end
           if (|(reg_req_i & locks_i)) begin
-            if (arb_req_o) ->arb_violation[1];
+            if (arb_req_o)->arb_violation[1];
           end
-          if (rd_i > 0 && locks_o[rd_i] !== 1) ->rd_locking_violation;
+          if (rd_i > 0 && locks_o[rd_i] !== 1)->rd_locking_violation;
         end
       end
     join_none
@@ -130,12 +128,12 @@ module reg_gnt_ckr_tb;
     start_clk_i();
     start_random_driver();
     start_in_out_mon();
-  end // main initial
+  end  // main initial
 
   initial begin
     repeat (1000000) @(posedge clk_i);
     ->end_of_simulation;
-  end // set simulation time...
+  end  // set simulation time...
 
   initial begin
     foreach (violation_state[i]) begin
@@ -183,15 +181,15 @@ module reg_gnt_ckr_tb;
         violation_state[3] = 'b0;
       end
     join_none
-  end // check for condition violations...
+  end  // check for condition violations...
 
   initial begin
     @(end_of_simulation);
     result_print(violation_state[0], "Jump Condition Violation Check");
-    result_print(violation_state[1],"Arbitration During Outage Check");
-    result_print(violation_state[2],"Arbitration Of Locked Registers Check");
+    result_print(violation_state[1], "Arbitration During Outage Check");
+    result_print(violation_state[2], "Arbitration Of Locked Registers Check");
     result_print(violation_state[3], "Destination Register Locking Check");
     $finish;
-  end // results of simulation...
+  end  // results of simulation...
 
 endmodule
