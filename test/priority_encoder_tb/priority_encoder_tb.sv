@@ -9,8 +9,6 @@ See LICENSE file in the project root for full license information
 
 module priority_encoder_tb;
 
-  //`define ENABLE_DUMPFILE
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,15 +38,14 @@ module priority_encoder_tb;
 
   n_wire wire_in;
   n_encode index_o;
+  logic index_valid_o;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  integer pen_counter = 0;
-  integer total_pencoded;
-  logic priority_violation_flag = 0;
-  event fail_trigger;
+  int pen_counter;
+  bit priority_violation_flag;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -58,7 +55,8 @@ module priority_encoder_tb;
       .NUM_WIRE(NUM_WIRE)
   ) u_pen1 (
       .wire_in,
-      .index_o
+      .index_o,
+      .index_valid_o
   );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,33 +74,32 @@ module priority_encoder_tb;
   endtask
 
   task automatic start_in_out_monitor();
+    pen_counter = 0;
     priority_violation_flag = 0;
     fork
       forever begin
+        logic valid;
         @(posedge clk_i);
-        #1ns;
-        // $display("wire_in = %b, input_idx = %0d, pen = %0d", wire_in, priority_idx(wire_in),
-                //  index_o);
+        valid = |wire_in;
 
-        if (priority_idx(wire_in) === index_o) begin
-          // $display("No violation of Priority");
-
-        end else begin
-          priority_violation_flag <= 1;
-          // $display("Violation of Priority");
+        if (valid === '1) begin
+          if ((index_valid_o === valid) && (index_o === priority_idx())) begin
+            pen_counter++;
+          end else begin
+            priority_violation_flag = 1;
+            result_print(0, "Priority Encoding Failed");
+            $finish;
+          end
         end
       end
     join_none
   endtask
 
-  function automatic integer priority_idx(n_wire wire_in);
+  function automatic integer priority_idx();
     for (integer i = 0; i < NUM_WIRE; i++) begin
       if (wire_in[i] === '1) return i;
     end
   endfunction
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-SEQUENTIALS
-  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-PROCEDURALS
@@ -112,35 +109,9 @@ module priority_encoder_tb;
     start_clk_i();
     start_random_driver();
     start_in_out_monitor();
-  end
-
-  initial begin
-    total_pencoded = 1000;
-    fork
-      begin
-        forever begin
-          @(posedge clk_i);
-          #2ns;
-          if (pen_counter === total_pencoded) begin
-            $display("[%.1f] all out of %0d priority encodings completed", $time, total_pencoded);
-            result_print(!priority_violation_flag, "Priority Preservation Check");
-            $finish;
-          end
-        end
-      end
-      begin
-        forever begin
-          @(posedge clk_i);
-          #2ns;
-          if (priority_violation_flag) begin
-            $display("[%.1f] %0d out of %0d priority encodings completed", $time, pen_counter,
-                     total_pencoded);
-            result_print(!priority_violation_flag, "Priority Preservation Check");
-            $finish;
-          end
-        end
-      end
-    join_none
+    repeat (1000) @(posedge clk_i);
+    result_print(!priority_violation_flag, "Priority Encoding");
+    $finish;
   end
 
 endmodule

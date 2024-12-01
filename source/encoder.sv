@@ -16,7 +16,8 @@ module encoder #(
 ) (
     input logic [NUM_WIRE-1:0] wire_in,  // Input vector of wires
 
-    output logic [$clog2(NUM_WIRE)-1:0] index_o  // Output index of the highest priority wire
+    output logic [$clog2(NUM_WIRE)-1:0] index_o,       // Output index of the highest priority wire
+    output logic                        index_valid_o  // Output is valid
 );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,5 +51,7 @@ module encoder #(
   for (genvar i = 0; i < $clog2(NUM_WIRE); i++) begin : g_addr_o
     always_comb index_o[i] = |index_or_red[i];  // OR reduction results to form the output index
   end
+
+  always_comb index_valid_o = |wire_in;
 
 endmodule

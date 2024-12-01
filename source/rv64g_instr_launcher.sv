@@ -65,18 +65,17 @@ module rv64g_instr_launcher #(
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Assign input instruction to the first pipeline stage
-  assign pl_ins[0]         = instr_in_i;
-  assign pl_ins_valid[0]   = instr_in_valid_i;
-  assign instr_in_ready_o  = pl_ins_ready[0];
+  assign pl_ins[0]        = instr_in_i;
+  assign pl_ins_valid[0]  = instr_in_valid_i;
+  assign instr_in_ready_o = pl_ins_ready[0];
 
   // Initialize lock signals
-  assign locks[0]          = locks_i;
+  assign locks[0]         = locks_i;
 
   // Assign output instruction and valid signal based on granted request index
-  assign instr_out_o       = pl_outs[gnt_idx];
-  assign instr_out_valid_o = arb_req[gnt_idx];
+  assign instr_out_o      = pl_outs[gnt_idx];
 
-  assign pl_outs_ready     = arb_gnt;
+  assign pl_outs_ready    = arb_gnt;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -144,7 +143,8 @@ module rv64g_instr_launcher #(
       .NUM_WIRE(NOS + 1)
   ) u_encoder (
       .wire_in(arb_gnt),
-      .index_o(gnt_idx)
+      .index_o(gnt_idx),
+      .index_valid_o(instr_out_valid_o)
   );
 
   // Generate clear signals for pipeline

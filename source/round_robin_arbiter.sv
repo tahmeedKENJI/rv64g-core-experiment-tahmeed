@@ -20,7 +20,8 @@ module round_robin_arbiter #(
     input logic               allow_i,  // Allow Request
     input logic [NUM_REQ-1:0] req_i,    // Request signals
 
-    output logic [NUM_REQ-1:0] gnt_o  // Grant signals
+    output logic [NUM_REQ-1:0] gnt_o,       // Grant signals
+    output logic               gnt_found_o  // Grant Found
 );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,9 +53,6 @@ module round_robin_arbiter #(
 
   // Calculate the next rotation index
   always_comb rot_index_next = (1 + index_o) % NUM_REQ;
-
-  // Enable latch when any grant is active
-  always_comb rot_index_latch_en = |gnt_o;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -94,7 +92,8 @@ module round_robin_arbiter #(
       .NUM_WIRE(NUM_REQ)
   ) u_encoder (
       .wire_in(gnt_o),  // Connect grant signals
-      .index_o  // Output the index of granted request
+      .index_o,  // Output the index of granted request
+      .index_valid_o(gnt_found_o)
   );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +104,7 @@ module round_robin_arbiter #(
   always_ff @(posedge clk_i or negedge arst_ni) begin
     if (~arst_ni) begin
       rot_index <= '0;  // Reset the rotation index
-    end else if (rot_index_latch_en) begin
+    end else if (gnt_found_o) begin
       rot_index <= rot_index_next;  // Update the rotation index
     end
   end

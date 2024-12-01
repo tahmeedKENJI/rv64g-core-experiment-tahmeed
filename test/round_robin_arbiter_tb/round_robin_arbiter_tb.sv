@@ -41,6 +41,7 @@ module round_robin_arbiter_tb;
   logic allow_i = '1;  // allow requests
   n_req_gnt req_i;  // input requests register
   n_req_gnt gnt_o;  // output grants register
+  logic gnt_found_o;  // output grants found
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
@@ -64,7 +65,8 @@ module round_robin_arbiter_tb;
       .clk_i,
       .allow_i,
       .req_i,
-      .gnt_o
+      .gnt_o,
+      .gnt_found_o
   );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +98,19 @@ module round_robin_arbiter_tb;
     join_none
   endtask
 
+  always @(posedge clk_i) begin
+    if (arst_ni === '1 & allow_i === '1) begin
+      if (gnt_found_o !== (|gnt_o))
+        result_print(0, $sformatf(
+                     "gnt_o:0b%b gnt_found_o:%0d arst_ni:%0d allow_i:%0d",
+                     gnt_o,
+                     gnt_found_o,
+                     arst_ni,
+                     allow_i
+                     ));
+    end
+  end
+
   task automatic start_in_out_monitor();
     fork
       forever begin
@@ -104,7 +119,6 @@ module round_robin_arbiter_tb;
         // $write("requests allowed: %0d\t", allow_i);
         // $write("requests profile: 0b%b\t", req_i);
         // $write("grants profile: 0b%b \n", gnt_o);
-
         if (allow_i & arst_ni)->req_gnt_event[chk_req_gnt(gnt_o)];
         else if (~allow_i) outage_counter++;
       end

@@ -16,7 +16,8 @@ module priority_encoder #(
 ) (
     input logic [NUM_WIRE-1:0] wire_in,  // Input vector of wires
 
-    output logic [$clog2(NUM_WIRE)-1:0] index_o  // Output index of the highest priority wire
+    output logic [$clog2(NUM_WIRE)-1:0] index_o,       // Output index of the highest priority wire
+    output logic                        index_valid_o  // Output is valid
 );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +43,9 @@ module priority_encoder #(
   encoder #(
       .NUM_WIRE(NUM_WIRE)  // Number of input wires for the encoder
   ) u_encoder (
-      .wire_in(one_hot_out),  // Input one-hot encoded signals
-      .index_o(index_o)       // Output index of the highest priority wire
+      .wire_in      (one_hot_out),   // Input one-hot encoded signals
+      .index_o      (index_o),       // Output index of the highest priority wire
+      .index_valid_o(index_valid_o)
   );
 
 endmodule

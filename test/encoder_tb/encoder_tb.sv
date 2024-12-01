@@ -14,8 +14,6 @@ See LICENSE file in the project root for full license information
 
 module encoder_tb;
 
-  // `define ENABLE_DUMPFILE
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-IMPORTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,29 +43,19 @@ module encoder_tb;
   // generates static task start_clk_i with tHigh:4ns tLow:6ns
   `CREATE_CLK(clk_i, 4ns, 6ns)
 
+  n_input wire_in;  // encoder input bus
+  n_output index_o;  // encoder output bus
+  logic index_valid_o;  // output index is valid
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  n_input wire_in;  // encoder input bus
-  n_output index_o;  // encoder output bus
   int tx_total = 0;  // records total number of executions
   int ms_time_var = 1;  // records time elapsed
 
   bit in_out_ok;
   int tx_success = 0;
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-INTERFACES
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-CLASSES
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-ASSIGNMENTS
-  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -76,9 +64,10 @@ module encoder_tb;
   // assign buses to the correct encoder ports
   encoder #(
       .NUM_WIRE(NUM_WIRE)
-  ) u_en1 (
-      .wire_in(wire_in),
-      .index_o(index_o)
+  ) u_encoder (
+      .wire_in,
+      .index_o,
+      .index_valid_o
   );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,10 +79,18 @@ module encoder_tb;
     in_out_ok = 1;
     fork
       forever begin
+        logic valid;
         @(posedge clk_i);
-        #1ns $display("input = %b, output = %d", wire_in, index_o);
-        if (one_hot_decode(wire_in) === index_o) tx_success++;
-        else in_out_ok = 0;
+        valid = |wire_in;
+        if (valid === '1) begin
+          if ((index_valid_o === valid) && $clog2(wire_in) === index_o) begin
+            tx_success++;
+          end else begin
+            in_out_ok = 0;
+            $display("wire_in:0b%b EXP/GOT: index_valid_o:%0d/%0d index_o:%0d/%0d", wire_in, valid,
+                     index_valid_o, $clog2(wire_in), index_o);
+          end
+        end
       end
     join_none
   endtask
@@ -103,22 +100,11 @@ module encoder_tb;
     fork
       forever begin
         @(posedge clk_i);
-        wire_in <= (1 << $urandom_range(0, NUM_WIRE - 1));
+        wire_in <= ($urandom_range(0, 1) << $urandom_range(0, NUM_WIRE - 1));
         tx_total++;
       end
     join_none
   endtask
-
-  // a redundant one_hot_decoder
-  function automatic int one_hot_decode(n_input value);
-    foreach (value[i]) begin
-      if (value[i] === 1) return i;
-    end
-  endfunction
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-SEQUENTIALS
-  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-PROCEDURALS
@@ -127,11 +113,10 @@ module encoder_tb;
   initial begin
     forever begin
       @(posedge clk_i);
-      if (tx_total == 4 * NUM_WIRE) begin
+      if (tx_total == 100 * NUM_WIRE) begin
         $display("END OF SIMULATION B8TCH");
         $display("Number of total runs: %d", tx_total);
         result_print(in_out_ok, "Data Encoding");
-
         $display("Number of valid runs: %d", tx_success);
         $finish;
       end
@@ -149,22 +134,5 @@ module encoder_tb;
     start_random_drive();
     start_in_out_mon();
   end
-
-  // initial begin
-  //   fork
-  //     begin
-  //       forever begin
-  //         #10ns $display("[%0d ms has elapsed]", ms_time_var);
-  //         ms_time_var++;
-  //       end
-  //     end
-  //     begin
-  //       forever begin
-  //         @(posedge clk_i);
-  //         $display("TICK TOCK");
-  //       end
-  //     end
-  //   join
-  // end
 
 endmodule
