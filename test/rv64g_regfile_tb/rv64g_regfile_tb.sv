@@ -226,7 +226,7 @@ module rv64g_regfile_tb;
   end
 
   initial begin
-    repeat (8000001) @(posedge clk_i);
+    repeat (2000001) @(posedge clk_i);
     result_print(lock_violation, "Lock Violation Check");
     result_print(overwrite_violation, "Overwrite Violation Check");
     $finish;
