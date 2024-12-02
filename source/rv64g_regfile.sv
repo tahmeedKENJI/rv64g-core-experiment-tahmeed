@@ -44,9 +44,10 @@ module rv64g_regfile #(
   logic [DW-1:0] regfile[NR];  // Array representing the register file
   logic wr_unlock_addr_not_zero;  // Flag indicating if the unlock address is non-zero
 
+  logic [NR-1:0] r_locks;  // locks register
   logic [NR-1:0] lock;  // Array representing the lock status for registers
   logic [NR-1:0] unlock;  // Array representing the unlock status for registers
-  logic [NR-1:0] locks_o_next;  // Next state of the lock status array
+  logic [NR-1:0] r_locks_next;  // Next state of the lock status array
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
@@ -75,7 +76,10 @@ module rv64g_regfile #(
   end
 
   // Calculate the next state of the locks
-  always_comb locks_o_next = (locks_o & unlock) | lock;
+  always_comb r_locks_next = (r_locks & unlock) | lock;
+
+  // Pass the r_locks or '1 based on reset
+  always_comb locks_o = arst_ni ? r_locks : '1;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SEQUENTIALS
@@ -96,9 +100,9 @@ module rv64g_regfile #(
   // Update the lock status on the rising edge of the clock or the falling edge of the reset signal
   always_ff @(posedge clk_i or negedge arst_ni) begin
     if (~arst_ni) begin
-      locks_o <= '0;  // Reset all lock statuses to zero
+      r_locks <= '0;  // Reset all lock statuses to zero
     end else begin
-      locks_o <= locks_o_next;  // Update the lock statuses
+      r_locks <= r_locks_next;  // Update the lock statuses
     end
   end
 
