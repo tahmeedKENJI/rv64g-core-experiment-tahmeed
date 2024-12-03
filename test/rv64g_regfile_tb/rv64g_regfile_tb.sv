@@ -64,16 +64,18 @@ module rv64g_regfile_tb;
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  addr_t temp_addr;
-  num_reg_t temp_num_reg;
+  num_reg_t ref_mem [XLEN];
+  data_t tmp_rs1;
+  data_t tmp_rs2;
+  data_t tmp_rs3;
+  data_t __rs1_ref_o__;
+  data_t __rs2_ref_o__;
+  data_t __rs3_ref_o__;
+  num_reg_t lock_profile;
+  logic read_wait;
+  logic lock_at_reset;
   logic lock_violation;
-  data_t temp_rs1_prev;
-  data_t temp_rs2_prev;
-  data_t temp_rs3_prev;
-  data_t temp_rs1_next;
-  data_t temp_rs2_next;
-  data_t temp_rs3_next;
-  logic overwrite_violation;
+  int read_error;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -102,9 +104,14 @@ module rv64g_regfile_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   task static apply_reset();
+    lock_at_reset = 1;
     #100ns;
     arst_ni <= 0;
     #100ns;
+    // $write("locks_o at reset: 0b%b\n", locks_o);
+    // $write("reset: 0b%b\n", arst_ni);
+    if (~(&(locks_o))) result_print(~lock_at_reset, "Locks Handling At Reset");
+    else result_print(lock_at_reset, "Locks Handling At Reset");
     arst_ni <= 1;
     #100ns;
   endtask
@@ -113,7 +120,6 @@ module rv64g_regfile_tb;
     fork
       begin
         forever begin
-          @(posedge clk_i);
           wr_lock_en_i <= $urandom_range(0, 99) < 50;
           wr_lock_addr_i <= $urandom;
 
@@ -124,94 +130,72 @@ module rv64g_regfile_tb;
           rs1_addr_i <= $urandom;
           rs2_addr_i <= $urandom;
           rs3_addr_i <= $urandom;
+          @(posedge clk_i);
         end
       end
     join_none
   endtask // random drive task
 
+  task automatic start_ref_mem_update();
+  foreach(lock_profile[i]) lock_profile[i] <= 'b0;
+  fork
+    begin
+      forever begin
+        @(posedge clk_i);
+        if (arst_ni) begin
+          if (wr_lock_en_i && wr_unlock_en_i && (wr_lock_addr_i === wr_unlock_addr_i)) begin
+            if (wr_lock_addr_i !== 0) lock_profile[wr_lock_addr_i] <= '1;
+          end else if (wr_lock_en_i || wr_unlock_en_i) begin
+            if (wr_lock_en_i && (wr_lock_addr_i !== 0)) lock_profile[wr_lock_addr_i] <= 'b1;
+            if (wr_unlock_en_i) begin
+              ref_mem[wr_unlock_addr_i]  <= wr_unlock_data_i;
+              lock_profile[wr_unlock_addr_i] <= 'b0;
+            end
+          end
+          tmp_rs1 <= ref_mem[rs1_addr_i];
+          tmp_rs2 <= ref_mem[rs2_addr_i];
+          tmp_rs3 <= ref_mem[rs3_addr_i];
+        end
+      end
+    end
+    begin
+      @(posedge clk_i);
+      foreach(ref_mem[i]) ref_mem[i] <= '0;
+    end
+  join_none
+  endtask
+
   task automatic start_in_out_monitor();
-  mailbox #(addr_t) in_mbx = new();
-  mailbox #(num_reg_t) out_mbx = new();
-
-  mailbox #(data_t) prev1_mbx = new();
-  mailbox #(data_t) next1_mbx = new();
-
-  mailbox #(data_t) prev2_mbx = new();
-  mailbox #(data_t) next2_mbx = new();
-
-  mailbox #(data_t) prev3_mbx = new();
-  mailbox #(data_t) next3_mbx = new();
-
-  lock_violation = 1;
-  overwrite_violation = 1;
-    fork
-      begin
-        forever begin
-          @(posedge clk_i);
-          if (arst_ni) begin
-            if (wr_lock_en_i) begin // lock violation check
-              in_mbx.put(wr_lock_addr_i);
-              #1ps;
-              out_mbx.put(locks_o);
-              in_mbx.get(temp_addr);
-              out_mbx.get(temp_num_reg);
-              if (temp_addr !== '0 && temp_num_reg[temp_addr] !== 1) lock_violation = 0;
-            end
-          end
+  mailbox #(data_t) rs1_mbx = new();
+  mailbox #(data_t) rs2_mbx = new();
+  mailbox #(data_t) rs3_mbx = new();
+  lock_violation <= 'b1;
+  read_error <= 0;
+  read_wait <= 'b0;
+  fork
+    begin
+      forever begin
+        @(posedge clk_i);
+        if (locks_o !== lock_profile) lock_violation <= 'b0;
+        rs1_mbx.put(rs1_data_o);
+        rs2_mbx.put(rs2_data_o);
+        rs3_mbx.put(rs3_data_o);
+        if (read_wait) begin
+          rs1_mbx.get(__rs1_ref_o__);
+          rs2_mbx.get(__rs2_ref_o__);
+          rs3_mbx.get(__rs3_ref_o__);
+          if (tmp_rs1 !== __rs1_ref_o__) read_error++;
+          if (tmp_rs2 !== __rs2_ref_o__) read_error++;
+          if (tmp_rs3 !== __rs3_ref_o__) read_error++;
         end
       end
-      begin
-        forever begin
-          @(posedge clk_i);
-          if (arst_ni) begin
-            if (wr_lock_en_i && wr_unlock_en_i) begin
-              if (wr_lock_addr_i == rs1_addr_i && wr_unlock_addr_i == rs1_addr_i) begin
-                prev1_mbx.put(rs1_data_o);
-                #1ps;
-                next1_mbx.put(rs1_data_o);
-                prev1_mbx.get(temp_rs1_prev);
-                next1_mbx.get(temp_rs1_next);
-                if (temp_rs1_prev !== temp_rs1_next) overwrite_violation = 0;
-              end
-            end
-          end
-        end
-      end
-      begin
-        forever begin
-          @(posedge clk_i);
-          if (arst_ni) begin
-            if (wr_lock_en_i && wr_unlock_en_i) begin
-              if (wr_lock_addr_i == rs2_addr_i && wr_unlock_addr_i == rs2_addr_i) begin
-                prev2_mbx.put(rs2_data_o);
-                #1ps;
-                next2_mbx.put(rs2_data_o);
-                prev2_mbx.get(temp_rs2_prev);
-                next2_mbx.get(temp_rs2_next);
-                if (temp_rs2_prev !== temp_rs2_next) overwrite_violation = 0;
-              end
-            end
-          end
-        end
-      end
-      begin
-        forever begin
-          @(posedge clk_i);
-          if (arst_ni) begin
-            if (wr_lock_en_i && wr_unlock_en_i) begin
-              if (wr_lock_addr_i == rs3_addr_i && wr_unlock_addr_i == rs3_addr_i) begin
-                prev3_mbx.put(rs3_data_o);
-                #1ps;
-                next3_mbx.put(rs3_data_o);
-                prev3_mbx.get(temp_rs3_prev);
-                next3_mbx.get(temp_rs3_next);
-                if (temp_rs3_prev !== temp_rs3_next) overwrite_violation = 0;
-              end
-            end
-          end
-        end
-      end
-    join_none
+    end
+    begin
+      @(posedge clk_i);
+      read_wait <= 'b1;
+      @(posedge clk_i);
+    end
+  join_none
   endtask
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,20 +206,28 @@ module rv64g_regfile_tb;
     apply_reset();
     start_clk_i();
     start_random_drive();
+    start_ref_mem_update();
     start_in_out_monitor();
   end
 
   initial begin
-    repeat (2000001) @(posedge clk_i);
+    forever begin
+      @(read_error);
+      $write("[%.3t]\n", $realtime);
+      $write("rs1_addr_i: %03d\t", rs1_addr_i);
+      $write("rs2_addr_i: %03d\t", rs2_addr_i);
+      $write("rs3_addr_i: %03d\n", rs3_addr_i);
+      $write("tmp_rs1: %p\n rs1_ref_o: %p\n", tmp_rs1, __rs1_ref_o__);
+      $write("tmp_rs2: %p\n rs2_ref_o: %p\n", tmp_rs2, __rs2_ref_o__);
+      $write("tmp_rs3: %p\n rs3_ref_o: %p\n", tmp_rs3, __rs3_ref_o__);
+    end
+  end
+
+  initial begin
+    repeat (201) @(posedge clk_i);
     result_print(lock_violation, "Lock Violation Check");
-    result_print(overwrite_violation, "Overwrite Violation Check");
+    result_print((read_error === 0), "Read Error Check");
     $finish;
   end
-endmodule
 
-// redundant T-T
-// initial begin
-//   @(negedge lock_violation);
-//   $write("[%.6t] lock violation 0b%b occured\n", $realtime, lock_violation);
-//   $write("temp_addr: 0b%b\n temp_prof: 0b%b\n", temp_addr, temp_num_reg);
-// end
+endmodule
