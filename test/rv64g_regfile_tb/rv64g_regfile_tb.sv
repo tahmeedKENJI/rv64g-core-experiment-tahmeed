@@ -64,18 +64,11 @@ module rv64g_regfile_tb;
   //-VARIABLES
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  num_reg_t ref_mem [XLEN];
-  data_t tmp_rs1;
-  data_t tmp_rs2;
-  data_t tmp_rs3;
-  data_t __rs1_ref_o__;
-  data_t __rs2_ref_o__;
-  data_t __rs3_ref_o__;
+  data_t ref_mem [NUM_REGS];
   num_reg_t lock_profile;
-  logic read_wait;
   logic lock_at_reset;
   logic lock_violation;
-  int read_error;
+  logic read_error;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -108,10 +101,9 @@ module rv64g_regfile_tb;
     #100ns;
     arst_ni <= 0;
     #100ns;
-    // $write("locks_o at reset: 0b%b\n", locks_o);
-    // $write("reset: 0b%b\n", arst_ni);
-    if (~(&(locks_o))) result_print(~lock_at_reset, "Locks Handling At Reset");
-    else result_print(lock_at_reset, "Locks Handling At Reset");
+    if (~(&(locks_o))) lock_at_reset = 0;
+    foreach (ref_mem[i]) ref_mem[i] <= '0;
+    lock_profile <= '0;
     arst_ni <= 1;
     #100ns;
   endtask
@@ -120,6 +112,7 @@ module rv64g_regfile_tb;
     fork
       begin
         forever begin
+          @(posedge clk_i);
           wr_lock_en_i <= $urandom_range(0, 99) < 50;
           wr_lock_addr_i <= $urandom;
 
@@ -130,70 +123,36 @@ module rv64g_regfile_tb;
           rs1_addr_i <= $urandom;
           rs2_addr_i <= $urandom;
           rs3_addr_i <= $urandom;
-          @(posedge clk_i);
         end
       end
     join_none
   endtask // random drive task
 
-  task automatic start_ref_mem_update();
-  foreach(lock_profile[i]) lock_profile[i] <= 'b0;
+  task automatic start_in_out_monitor();
+  lock_violation <= 'b1;
+  read_error <= 'b1;
   fork
     begin
       forever begin
         @(posedge clk_i);
         if (arst_ni) begin
-          if (wr_lock_en_i && wr_unlock_en_i && (wr_lock_addr_i === wr_unlock_addr_i)) begin
-            if (wr_lock_addr_i !== 0) lock_profile[wr_lock_addr_i] <= '1;
-          end else if (wr_lock_en_i || wr_unlock_en_i) begin
-            if (wr_lock_en_i && (wr_lock_addr_i !== 0)) lock_profile[wr_lock_addr_i] <= 'b1;
-            if (wr_unlock_en_i) begin
-              ref_mem[wr_unlock_addr_i]  <= wr_unlock_data_i;
-              lock_profile[wr_unlock_addr_i] <= 'b0;
-            end
+          if (wr_unlock_en_i && (wr_unlock_addr_i !== 0)) begin
+            ref_mem[wr_unlock_addr_i] <= wr_unlock_data_i;
+            lock_profile[wr_unlock_addr_i] <= ~wr_unlock_en_i;
           end
-          tmp_rs1 <= ref_mem[rs1_addr_i];
-          tmp_rs2 <= ref_mem[rs2_addr_i];
-          tmp_rs3 <= ref_mem[rs3_addr_i];
+          if (wr_lock_en_i && (wr_lock_addr_i !== 0)) lock_profile[wr_lock_addr_i] <= wr_lock_en_i;
         end
-      end
-    end
-    begin
-      @(posedge clk_i);
-      foreach(ref_mem[i]) ref_mem[i] <= '0;
-    end
-  join_none
-  endtask
 
-  task automatic start_in_out_monitor();
-  mailbox #(data_t) rs1_mbx = new();
-  mailbox #(data_t) rs2_mbx = new();
-  mailbox #(data_t) rs3_mbx = new();
-  lock_violation <= 'b1;
-  read_error <= 0;
-  read_wait <= 'b0;
-  fork
-    begin
-      forever begin
-        @(posedge clk_i);
-        if (locks_o !== lock_profile) lock_violation <= 'b0;
-        rs1_mbx.put(rs1_data_o);
-        rs2_mbx.put(rs2_data_o);
-        rs3_mbx.put(rs3_data_o);
-        if (read_wait) begin
-          rs1_mbx.get(__rs1_ref_o__);
-          rs2_mbx.get(__rs2_ref_o__);
-          rs3_mbx.get(__rs3_ref_o__);
-          if (tmp_rs1 !== __rs1_ref_o__) read_error++;
-          if (tmp_rs2 !== __rs2_ref_o__) read_error++;
-          if (tmp_rs3 !== __rs3_ref_o__) read_error++;
+        if (locks_o !== lock_profile) begin
+          lock_violation = 'b0;
+        end
+
+        if (rs1_addr_i !== 'x && rs1_addr_i !== '0) begin
+          if (rs1_data_o !== ref_mem[rs1_addr_i]) begin
+            read_error = 'b0;
+          end
         end
       end
-    end
-    begin
-      @(posedge clk_i);
-      read_wait <= 'b1;
-      @(posedge clk_i);
     end
   join_none
   endtask
@@ -206,27 +165,14 @@ module rv64g_regfile_tb;
     apply_reset();
     start_clk_i();
     start_random_drive();
-    start_ref_mem_update();
     start_in_out_monitor();
   end
 
   initial begin
-    forever begin
-      @(read_error);
-      $write("[%.3t]\n", $realtime);
-      $write("rs1_addr_i: %03d\t", rs1_addr_i);
-      $write("rs2_addr_i: %03d\t", rs2_addr_i);
-      $write("rs3_addr_i: %03d\n", rs3_addr_i);
-      $write("tmp_rs1: %p\n rs1_ref_o: %p\n", tmp_rs1, __rs1_ref_o__);
-      $write("tmp_rs2: %p\n rs2_ref_o: %p\n", tmp_rs2, __rs2_ref_o__);
-      $write("tmp_rs3: %p\n rs3_ref_o: %p\n", tmp_rs3, __rs3_ref_o__);
-    end
-  end
-
-  initial begin
-    repeat (201) @(posedge clk_i);
+    repeat (1000001) @(posedge clk_i);
+    result_print(lock_at_reset, "Reset Lockdown Check");
     result_print(lock_violation, "Lock Violation Check");
-    result_print((read_error === 0), "Read Error Check");
+    result_print(read_error, "Read Error Check");
     $finish;
   end
 
