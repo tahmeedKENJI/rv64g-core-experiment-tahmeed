@@ -68,7 +68,7 @@ module rv64g_regfile_tb;
   num_reg_t lock_profile;
   logic lock_at_reset;
   logic lock_violation;
-  logic read_error;
+  logic [2:0] read_error;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -130,7 +130,7 @@ module rv64g_regfile_tb;
 
   task automatic start_in_out_monitor();
   lock_violation <= 'b1;
-  read_error <= 'b1;
+  read_error <= '1;
   fork
     begin
       forever begin
@@ -149,7 +149,17 @@ module rv64g_regfile_tb;
 
         if (rs1_addr_i !== 'x && rs1_addr_i !== '0) begin
           if (rs1_data_o !== ref_mem[rs1_addr_i]) begin
-            read_error = 'b0;
+            read_error[0] = 'b0;
+          end
+        end
+        if (rs2_addr_i !== 'x && rs2_addr_i !== '0) begin
+          if (rs2_data_o !== ref_mem[rs2_addr_i]) begin
+            read_error[1] = 'b0;
+          end
+        end
+        if (rs3_addr_i !== 'x && rs3_addr_i !== '0) begin
+          if (rs3_data_o !== ref_mem[rs3_addr_i]) begin
+            read_error[2] = 'b0;
           end
         end
       end
@@ -172,7 +182,9 @@ module rv64g_regfile_tb;
     repeat (1000001) @(posedge clk_i);
     result_print(lock_at_reset, "Reset Lockdown Check");
     result_print(lock_violation, "Lock Violation Check");
-    result_print(read_error, "Read Error Check");
+    result_print(read_error[0], "Rs1 Read Error Check");
+    result_print(read_error[1], "Rs2 Read Error Check");
+    result_print(read_error[2], "Rs3 Read Error Check");
     $finish;
   end
 
