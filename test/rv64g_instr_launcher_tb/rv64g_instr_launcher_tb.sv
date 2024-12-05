@@ -18,12 +18,13 @@ module rv64g_instr_launcher_tb;
   // bring in the testbench essentials functions and macros
   `include "vip/tb_ess.sv"
 
+  import rv64g_pkg::decoded_instr_t;  // Type for decoded instructions
+  import rv64g_pkg::NUM_REGS;  // Number of registers
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  import rv64g_pkg::decoded_instr_t;  // Type for decoded instructions
-  import rv64g_pkg::NUM_REGS;  // Number of registers
   localparam type locks_t = logic [NUM_REGS-1:0];  // Type for lock signals
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
