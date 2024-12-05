@@ -70,216 +70,234 @@ module rv64g_instr_decoder #(
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // INSTRUCTION REGISTER INDEX
-  assign rd          = code_i[11:7];
-  assign rs1         = code_i[19:15];
-  assign rs2         = code_i[24:20];
-  assign rs3         = code_i[31:27];
+  always_comb rd = code_i[11:7];
+  always_comb rs1 = code_i[19:15];
+  always_comb rs2 = code_i[24:20];
+  always_comb rs3 = code_i[31:27];
 
   // SHIFT AMOUNT
-  assign aimm[5:0]   = code_i[25:20];
-  assign aimm[63:6]  = '0;
+  always_comb begin
+    aimm = '0;
+    aimm[5:0] = code_i[25:20];
+  end
 
   // BTYPE INSTRUCTION IMMEDIATE
-  assign bimm[0]     = '0;
-  assign bimm[4:1]   = code_i[11:8];
-  assign bimm[10:5]  = code_i[30:25];
-  assign bimm[11]    = code_i[7];
-  assign bimm[12]    = code_i[31];
-  assign bimm[63:13] = {51{code_i[31]}};
+  always_comb begin
+    bimm = '0;
+    bimm[4:1] = code_i[11:8];
+    bimm[10:5] = code_i[30:25];
+    bimm[11] = code_i[7];
+    bimm[12] = code_i[31];
+    bimm[63:13] = {51{code_i[31]}};
+  end
 
   // CSR INSTRUCTION IMMEDIATE
-  assign cimm[11:0]  = code_i[31:20];
-  assign cimm[16:12] = code_i[19:15];
-  assign cimm[63:17] = '0;
+  always_comb begin
+    cimm = '0;
+    cimm[11:0] = code_i[31:20];
+    cimm[16:12] = code_i[19:15];
+  end
 
   // ITYPE INSTRUCTION IMMEDIATE
-  assign iimm[11:0]  = code_i[31:20];
-  assign iimm[63:12] = {52{code_i[31]}};
+  always_comb begin
+    iimm[11:0]  = code_i[31:20];
+    iimm[63:12] = {52{code_i[31]}};
+  end
 
   // JTYPE INSTRUCTION IMMEDIATE
-  assign jimm[0]     = '0;
-  assign jimm[10:1]  = code_i[30:21];
-  assign jimm[19:12] = code_i[19:12];
-  assign jimm[11]    = code_i[20];
-  assign jimm[20]    = code_i[31];
-  assign jimm[63:21] = {43{code_i[31]}};
+  always_comb begin
+    jimm = '0;
+    jimm[10:1] = code_i[30:21];
+    jimm[19:12] = code_i[19:12];
+    jimm[11] = code_i[20];
+    jimm[20] = code_i[31];
+    jimm[63:21] = {43{code_i[31]}};
+  end
 
   // FLOATING ROUND MODE IMMEDIATE
-  assign rimm[2:0]   = code_i[14:12];
-  assign rimm[63:3]  = '0;
+  always_comb begin
+    rimm = '0;
+    rimm[2:0] = code_i[14:12];
+  end
 
   // RTYPE INSTRUCTION IMMEDIATE
-  assign simm[4:0]   = code_i[11:7];
-  assign simm[11:5]  = code_i[31:25];
-  assign simm[63:12] = {52{code_i[31]}};
+  always_comb begin
+    simm[4:0]   = code_i[11:7];
+    simm[11:5]  = code_i[31:25];
+    simm[63:12] = {52{code_i[31]}};
+  end
 
   // ATOMICS IMMEDIATE
-  assign timm[0]     = code_i[25:25];
-  assign timm[1]     = code_i[26:26];
-  assign timm[63:2]  = '0;
+  always_comb begin
+    timm = '0;
+    timm[0] = code_i[25:25];
+    timm[1] = code_i[26:26];
+  end
 
   // UTYPE INSTRUCTION IMMEDIATE
-  assign uimm[11:0]  = code_i[31:12];
-  assign uimm[63:12] = '0;
+  always_comb begin
+    uimm = '0;
+    uimm[11:0] = code_i[31:12];
+  end
 
   // Decode the instruction and set the intermediate function
-  assign i_func[0]   = ((code_i & 32'h0000007F) == 32'h00000037) ? i_LUI : '1;
-  assign i_func[1]   = ((code_i & 32'h0000007F) == 32'h00000017) ? i_AUIPC : '1;
-  assign i_func[2]   = ((code_i & 32'h0000007F) == 32'h0000006F) ? i_JAL : '1;
-  assign i_func[3]   = ((code_i & 32'h0000707F) == 32'h00000067) ? i_JALR : '1;
-  assign i_func[4]   = ((code_i & 32'h0000707F) == 32'h00000063) ? i_BEQ : '1;
-  assign i_func[5]   = ((code_i & 32'h0000707F) == 32'h00001063) ? i_BNE : '1;
-  assign i_func[6]   = ((code_i & 32'h0000707F) == 32'h00004063) ? i_BLT : '1;
-  assign i_func[7]   = ((code_i & 32'h0000707F) == 32'h00005063) ? i_BGE : '1;
-  assign i_func[8]   = ((code_i & 32'h0000707F) == 32'h00006063) ? i_BLTU : '1;
-  assign i_func[9]   = ((code_i & 32'h0000707F) == 32'h00007063) ? i_BGEU : '1;
-  assign i_func[10]  = ((code_i & 32'h0000707F) == 32'h00000003) ? i_LB : '1;
-  assign i_func[11]  = ((code_i & 32'h0000707F) == 32'h00001003) ? i_LH : '1;
-  assign i_func[12]  = ((code_i & 32'h0000707F) == 32'h00002003) ? i_LW : '1;
-  assign i_func[13]  = ((code_i & 32'h0000707F) == 32'h00004003) ? i_LBU : '1;
-  assign i_func[14]  = ((code_i & 32'h0000707F) == 32'h00005003) ? i_LHU : '1;
-  assign i_func[15]  = ((code_i & 32'h0000707F) == 32'h00000023) ? i_SB : '1;
-  assign i_func[16]  = ((code_i & 32'h0000707F) == 32'h00001023) ? i_SH : '1;
-  assign i_func[17]  = ((code_i & 32'h0000707F) == 32'h00002023) ? i_SW : '1;
-  assign i_func[18]  = ((code_i & 32'h0000707F) == 32'h00000013) ? i_ADDI : '1;
-  assign i_func[19]  = ((code_i & 32'h0000707F) == 32'h00002013) ? i_SLTI : '1;
-  assign i_func[20]  = ((code_i & 32'h0000707F) == 32'h00003013) ? i_SLTIU : '1;
-  assign i_func[21]  = ((code_i & 32'h0000707F) == 32'h00004013) ? i_XORI : '1;
-  assign i_func[22]  = ((code_i & 32'h0000707F) == 32'h00006013) ? i_ORI : '1;
-  assign i_func[23]  = ((code_i & 32'h0000707F) == 32'h00007013) ? i_ANDI : '1;
-  assign i_func[24]  = ((code_i & 32'hFE00707F) == 32'h00001013) ? i_SLLI : '1;
-  assign i_func[25]  = ((code_i & 32'hFE00707F) == 32'h00005013) ? i_SRLI : '1;
-  assign i_func[26]  = ((code_i & 32'hFE00707F) == 32'h40005013) ? i_SRAI : '1;
-  assign i_func[27]  = ((code_i & 32'hFE00707F) == 32'h00000033) ? i_ADD : '1;
-  assign i_func[28]  = ((code_i & 32'hFE00707F) == 32'h40000033) ? i_SUB : '1;
-  assign i_func[29]  = ((code_i & 32'hFE00707F) == 32'h00001033) ? i_SLL : '1;
-  assign i_func[30]  = ((code_i & 32'hFE00707F) == 32'h00002033) ? i_SLT : '1;
-  assign i_func[31]  = ((code_i & 32'hFE00707F) == 32'h00003033) ? i_SLTU : '1;
-  assign i_func[32]  = ((code_i & 32'hFE00707F) == 32'h00004033) ? i_XOR : '1;
-  assign i_func[33]  = ((code_i & 32'hFE00707F) == 32'h00005033) ? i_SRL : '1;
-  assign i_func[34]  = ((code_i & 32'hFE00707F) == 32'h40005033) ? i_SRA : '1;
-  assign i_func[35]  = ((code_i & 32'hFE00707F) == 32'h00006033) ? i_OR : '1;
-  assign i_func[36]  = ((code_i & 32'hFE00707F) == 32'h00007033) ? i_AND : '1;
-  assign i_func[37]  = ((code_i & 32'h0000707F) == 32'h0000000F) ? i_FENCE : '1;
-  assign i_func[38]  = ((code_i & 32'hFFFFFFFF) == 32'h8330000F) ? i_FENCE_TSO : '1;
-  assign i_func[39]  = ((code_i & 32'hFFFFFFFF) == 32'h0100000F) ? i_PAUSE : '1;
-  assign i_func[40]  = ((code_i & 32'hFFFFFFFF) == 32'h00000073) ? i_ECALL : '1;
-  assign i_func[41]  = ((code_i & 32'hFFFFFFFF) == 32'h00100073) ? i_EBREAK : '1;
-  assign i_func[42]  = ((code_i & 32'h0000707F) == 32'h00006003) ? i_LWU : '1;
-  assign i_func[43]  = ((code_i & 32'h0000707F) == 32'h00003003) ? i_LD : '1;
-  assign i_func[44]  = ((code_i & 32'h0000707F) == 32'h00003023) ? i_SD : '1;
-  assign i_func[45]  = ((code_i & 32'h0000707F) == 32'h0000001B) ? i_ADDIW : '1;
-  assign i_func[46]  = ((code_i & 32'hFE00707F) == 32'h0000101B) ? i_SLLIW : '1;
-  assign i_func[47]  = ((code_i & 32'hFE00707F) == 32'h0000501B) ? i_SRLIW : '1;
-  assign i_func[48]  = ((code_i & 32'hFE00707F) == 32'h4000501B) ? i_SRAIW : '1;
-  assign i_func[49]  = ((code_i & 32'hFE00707F) == 32'h0000003B) ? i_ADDW : '1;
-  assign i_func[50]  = ((code_i & 32'hFE00707F) == 32'h4000003B) ? i_SUBW : '1;
-  assign i_func[51]  = ((code_i & 32'hFE00707F) == 32'h0000103B) ? i_SLLW : '1;
-  assign i_func[52]  = ((code_i & 32'hFE00707F) == 32'h0000503B) ? i_SRLW : '1;
-  assign i_func[53]  = ((code_i & 32'hFE00707F) == 32'h4000503B) ? i_SRAW : '1;
-  assign i_func[54]  = ((code_i & 32'h0000707F) == 32'h00001073) ? i_CSRRW : '1;
-  assign i_func[55]  = ((code_i & 32'h0000707F) == 32'h00002073) ? i_CSRRS : '1;
-  assign i_func[56]  = ((code_i & 32'h0000707F) == 32'h00003073) ? i_CSRRC : '1;
-  assign i_func[57]  = ((code_i & 32'h0000707F) == 32'h00005073) ? i_CSRRWI : '1;
-  assign i_func[58]  = ((code_i & 32'h0000707F) == 32'h00006073) ? i_CSRRSI : '1;
-  assign i_func[59]  = ((code_i & 32'h0000707F) == 32'h00007073) ? i_CSRRCI : '1;
-  assign i_func[60]  = ((code_i & 32'hFE00707F) == 32'h02000033) ? i_MUL : '1;
-  assign i_func[61]  = ((code_i & 32'hFE00707F) == 32'h02001033) ? i_MULH : '1;
-  assign i_func[62]  = ((code_i & 32'hFE00707F) == 32'h02002033) ? i_MULHSU : '1;
-  assign i_func[63]  = ((code_i & 32'hFE00707F) == 32'h02003033) ? i_MULHU : '1;
-  assign i_func[64]  = ((code_i & 32'hFE00707F) == 32'h02004033) ? i_DIV : '1;
-  assign i_func[65]  = ((code_i & 32'hFE00707F) == 32'h02005033) ? i_DIVU : '1;
-  assign i_func[66]  = ((code_i & 32'hFE00707F) == 32'h02006033) ? i_REM : '1;
-  assign i_func[67]  = ((code_i & 32'hFE00707F) == 32'h02007033) ? i_REMU : '1;
-  assign i_func[68]  = ((code_i & 32'hFE00707F) == 32'h0200003B) ? i_MULW : '1;
-  assign i_func[69]  = ((code_i & 32'hFE00707F) == 32'h0200403B) ? i_DIVW : '1;
-  assign i_func[70]  = ((code_i & 32'hFE00707F) == 32'h0200503B) ? i_DIVUW : '1;
-  assign i_func[71]  = ((code_i & 32'hFE00707F) == 32'h0200603B) ? i_REMW : '1;
-  assign i_func[72]  = ((code_i & 32'hFE00707F) == 32'h0200703B) ? i_REMUW : '1;
-  assign i_func[73]  = ((code_i & 32'hF9F0707F) == 32'h1000202F) ? i_LR_W : '1;
-  assign i_func[74]  = ((code_i & 32'hF800707F) == 32'h1800202F) ? i_SC_W : '1;
-  assign i_func[75]  = ((code_i & 32'hF800707F) == 32'h0800202F) ? i_AMOSWAP_W : '1;
-  assign i_func[76]  = ((code_i & 32'hF800707F) == 32'h0000202F) ? i_AMOADD_W : '1;
-  assign i_func[77]  = ((code_i & 32'hF800707F) == 32'h2000202F) ? i_AMOXOR_W : '1;
-  assign i_func[78]  = ((code_i & 32'hF800707F) == 32'h6000202F) ? i_AMOAND_W : '1;
-  assign i_func[79]  = ((code_i & 32'hF800707F) == 32'h4000202F) ? i_AMOOR_W : '1;
-  assign i_func[80]  = ((code_i & 32'hF800707F) == 32'h8000202F) ? i_AMOMIN_W : '1;
-  assign i_func[81]  = ((code_i & 32'hF800707F) == 32'hA000202F) ? i_AMOMAX_W : '1;
-  assign i_func[82]  = ((code_i & 32'hF800707F) == 32'hC000202F) ? i_AMOMINU_W : '1;
-  assign i_func[83]  = ((code_i & 32'hF800707F) == 32'hE000202F) ? i_AMOMAXU_W : '1;
-  assign i_func[84]  = ((code_i & 32'hF9F0707F) == 32'h1000302F) ? i_LR_D : '1;
-  assign i_func[85]  = ((code_i & 32'hF800707F) == 32'h1800302F) ? i_SC_D : '1;
-  assign i_func[86]  = ((code_i & 32'hF800707F) == 32'h0800302F) ? i_AMOSWAP_D : '1;
-  assign i_func[87]  = ((code_i & 32'hF800707F) == 32'h0000302F) ? i_AMOADD_D : '1;
-  assign i_func[88]  = ((code_i & 32'hF800707F) == 32'h2000302F) ? i_AMOXOR_D : '1;
-  assign i_func[89]  = ((code_i & 32'hF800707F) == 32'h6000302F) ? i_AMOAND_D : '1;
-  assign i_func[90]  = ((code_i & 32'hF800707F) == 32'h4000302F) ? i_AMOOR_D : '1;
-  assign i_func[91]  = ((code_i & 32'hF800707F) == 32'h8000302F) ? i_AMOMIN_D : '1;
-  assign i_func[92]  = ((code_i & 32'hF800707F) == 32'hA000302F) ? i_AMOMAX_D : '1;
-  assign i_func[93]  = ((code_i & 32'hF800707F) == 32'hC000302F) ? i_AMOMINU_D : '1;
-  assign i_func[94]  = ((code_i & 32'hF800707F) == 32'hE000302F) ? i_AMOMAXU_D : '1;
-  assign i_func[95]  = ((code_i & 32'h0000707F) == 32'h00002007) ? i_FLW : '1;
-  assign i_func[96]  = ((code_i & 32'h0000707F) == 32'h00002027) ? i_FSW : '1;
-  assign i_func[97]  = ((code_i & 32'h0600007F) == 32'h00000043) ? i_FMADD_S : '1;
-  assign i_func[98]  = ((code_i & 32'h0600007F) == 32'h00000047) ? i_FMSUB_S : '1;
-  assign i_func[99]  = ((code_i & 32'h0600007F) == 32'h0000004B) ? i_FNMSUB_S : '1;
-  assign i_func[100] = ((code_i & 32'h0600007F) == 32'h0000004F) ? i_FNMADD_S : '1;
-  assign i_func[101] = ((code_i & 32'hFE00007F) == 32'h00000053) ? i_FADD_S : '1;
-  assign i_func[102] = ((code_i & 32'hFE00007F) == 32'h08000053) ? i_FSUB_S : '1;
-  assign i_func[103] = ((code_i & 32'hFE00007F) == 32'h10000053) ? i_FMUL_S : '1;
-  assign i_func[104] = ((code_i & 32'hFE00007F) == 32'h18000053) ? i_FDIV_S : '1;
-  assign i_func[105] = ((code_i & 32'hFFF0007F) == 32'h58000053) ? i_FSQRT_S : '1;
-  assign i_func[106] = ((code_i & 32'hFE00707F) == 32'h20000053) ? i_FSGNJ_S : '1;
-  assign i_func[107] = ((code_i & 32'hFE00707F) == 32'h20001053) ? i_FSGNJN_S : '1;
-  assign i_func[108] = ((code_i & 32'hFE00707F) == 32'h20002053) ? i_FSGNJX_S : '1;
-  assign i_func[109] = ((code_i & 32'hFE00707F) == 32'h28000053) ? i_FMIN_S : '1;
-  assign i_func[110] = ((code_i & 32'hFE00707F) == 32'h28001053) ? i_FMAX_S : '1;
-  assign i_func[111] = ((code_i & 32'hFFF0007F) == 32'hC0000053) ? i_FCVT_W_S : '1;
-  assign i_func[112] = ((code_i & 32'hFFF0007F) == 32'hC0100053) ? i_FCVT_WU_S : '1;
-  assign i_func[113] = ((code_i & 32'hFFF0707F) == 32'hE0000053) ? i_FMV_X_W : '1;
-  assign i_func[114] = ((code_i & 32'hFE00707F) == 32'hA0002053) ? i_FEQ_S : '1;
-  assign i_func[115] = ((code_i & 32'hFE00707F) == 32'hA0001053) ? i_FLT_S : '1;
-  assign i_func[116] = ((code_i & 32'hFE00707F) == 32'hA0000053) ? i_FLE_S : '1;
-  assign i_func[117] = ((code_i & 32'hFFF0707F) == 32'hE0001053) ? i_FCLASS_S : '1;
-  assign i_func[118] = ((code_i & 32'hFFF0007F) == 32'hD0000053) ? i_FCVT_S_W : '1;
-  assign i_func[119] = ((code_i & 32'hFFF0007F) == 32'hD0100053) ? i_FCVT_S_WU : '1;
-  assign i_func[120] = ((code_i & 32'hFFF0707F) == 32'hF0000053) ? i_FMV_W_X : '1;
-  assign i_func[121] = ((code_i & 32'hFFF0007F) == 32'hC0200053) ? i_FCVT_L_S : '1;
-  assign i_func[122] = ((code_i & 32'hFFF0007F) == 32'hC0300053) ? i_FCVT_LU_S : '1;
-  assign i_func[123] = ((code_i & 32'hFFF0007F) == 32'hD0200053) ? i_FCVT_S_L : '1;
-  assign i_func[124] = ((code_i & 32'hFFF0007F) == 32'hD0300053) ? i_FCVT_S_LU : '1;
-  assign i_func[125] = ((code_i & 32'h0000707F) == 32'h00003007) ? i_FLD : '1;
-  assign i_func[126] = ((code_i & 32'h0000707F) == 32'h00003027) ? i_FSD : '1;
-  assign i_func[127] = ((code_i & 32'h0600007F) == 32'h02000043) ? i_FMADD_D : '1;
-  assign i_func[128] = ((code_i & 32'h0600007F) == 32'h02000047) ? i_FMSUB_D : '1;
-  assign i_func[129] = ((code_i & 32'h0600007F) == 32'h0200004B) ? i_FNMSUB_D : '1;
-  assign i_func[130] = ((code_i & 32'h0600007F) == 32'h0200004F) ? i_FNMADD_D : '1;
-  assign i_func[131] = ((code_i & 32'hFE00007F) == 32'h02000053) ? i_FADD_D : '1;
-  assign i_func[132] = ((code_i & 32'hFE00007F) == 32'h0A000053) ? i_FSUB_D : '1;
-  assign i_func[133] = ((code_i & 32'hFE00007F) == 32'h12000053) ? i_FMUL_D : '1;
-  assign i_func[134] = ((code_i & 32'hFE00007F) == 32'h1A000053) ? i_FDIV_D : '1;
-  assign i_func[135] = ((code_i & 32'hFFF0007F) == 32'h5A000053) ? i_FSQRT_D : '1;
-  assign i_func[136] = ((code_i & 32'hFE00707F) == 32'h22000053) ? i_FSGNJ_D : '1;
-  assign i_func[137] = ((code_i & 32'hFE00707F) == 32'h22001053) ? i_FSGNJN_D : '1;
-  assign i_func[138] = ((code_i & 32'hFE00707F) == 32'h22002053) ? i_FSGNJX_D : '1;
-  assign i_func[139] = ((code_i & 32'hFE00707F) == 32'h2A000053) ? i_FMIN_D : '1;
-  assign i_func[140] = ((code_i & 32'hFE00707F) == 32'h2A001053) ? i_FMAX_D : '1;
-  assign i_func[141] = ((code_i & 32'hFFF0007F) == 32'h40100053) ? i_FCVT_S_D : '1;
-  assign i_func[142] = ((code_i & 32'hFFF0007F) == 32'h42000053) ? i_FCVT_D_S : '1;
-  assign i_func[143] = ((code_i & 32'hFE00707F) == 32'hA2002053) ? i_FEQ_D : '1;
-  assign i_func[144] = ((code_i & 32'hFE00707F) == 32'hA2001053) ? i_FLT_D : '1;
-  assign i_func[145] = ((code_i & 32'hFE00707F) == 32'hA2000053) ? i_FLE_D : '1;
-  assign i_func[146] = ((code_i & 32'hFFF0707F) == 32'hE2001053) ? i_FCLASS_D : '1;
-  assign i_func[147] = ((code_i & 32'hFFF0007F) == 32'hC2000053) ? i_FCVT_W_D : '1;
-  assign i_func[148] = ((code_i & 32'hFFF0007F) == 32'hC2100053) ? i_FCVT_WU_D : '1;
-  assign i_func[149] = ((code_i & 32'hFFF0007F) == 32'hD2000053) ? i_FCVT_D_W : '1;
-  assign i_func[150] = ((code_i & 32'hFFF0007F) == 32'hD2100053) ? i_FCVT_D_WU : '1;
-  assign i_func[151] = ((code_i & 32'hFFF0007F) == 32'hC2200053) ? i_FCVT_L_D : '1;
-  assign i_func[152] = ((code_i & 32'hFFF0007F) == 32'hC2300053) ? i_FCVT_LU_D : '1;
-  assign i_func[153] = ((code_i & 32'hFFF0707F) == 32'hE2000053) ? i_FMV_X_D : '1;
-  assign i_func[154] = ((code_i & 32'hFFF0007F) == 32'hD2200053) ? i_FCVT_D_L : '1;
-  assign i_func[155] = ((code_i & 32'hFFF0007F) == 32'hD2300053) ? i_FCVT_D_LU : '1;
-  assign i_func[156] = ((code_i & 32'hFFF0707F) == 32'hF2000053) ? i_FMV_D_X : '1;
+  always_comb i_func[0] = ((code_i & 32'h0000007F) == 32'h00000037) ? i_LUI : '1;
+  always_comb i_func[1] = ((code_i & 32'h0000007F) == 32'h00000017) ? i_AUIPC : '1;
+  always_comb i_func[2] = ((code_i & 32'h0000007F) == 32'h0000006F) ? i_JAL : '1;
+  always_comb i_func[3] = ((code_i & 32'h0000707F) == 32'h00000067) ? i_JALR : '1;
+  always_comb i_func[4] = ((code_i & 32'h0000707F) == 32'h00000063) ? i_BEQ : '1;
+  always_comb i_func[5] = ((code_i & 32'h0000707F) == 32'h00001063) ? i_BNE : '1;
+  always_comb i_func[6] = ((code_i & 32'h0000707F) == 32'h00004063) ? i_BLT : '1;
+  always_comb i_func[7] = ((code_i & 32'h0000707F) == 32'h00005063) ? i_BGE : '1;
+  always_comb i_func[8] = ((code_i & 32'h0000707F) == 32'h00006063) ? i_BLTU : '1;
+  always_comb i_func[9] = ((code_i & 32'h0000707F) == 32'h00007063) ? i_BGEU : '1;
+  always_comb i_func[10] = ((code_i & 32'h0000707F) == 32'h00000003) ? i_LB : '1;
+  always_comb i_func[11] = ((code_i & 32'h0000707F) == 32'h00001003) ? i_LH : '1;
+  always_comb i_func[12] = ((code_i & 32'h0000707F) == 32'h00002003) ? i_LW : '1;
+  always_comb i_func[13] = ((code_i & 32'h0000707F) == 32'h00004003) ? i_LBU : '1;
+  always_comb i_func[14] = ((code_i & 32'h0000707F) == 32'h00005003) ? i_LHU : '1;
+  always_comb i_func[15] = ((code_i & 32'h0000707F) == 32'h00000023) ? i_SB : '1;
+  always_comb i_func[16] = ((code_i & 32'h0000707F) == 32'h00001023) ? i_SH : '1;
+  always_comb i_func[17] = ((code_i & 32'h0000707F) == 32'h00002023) ? i_SW : '1;
+  always_comb i_func[18] = ((code_i & 32'h0000707F) == 32'h00000013) ? i_ADDI : '1;
+  always_comb i_func[19] = ((code_i & 32'h0000707F) == 32'h00002013) ? i_SLTI : '1;
+  always_comb i_func[20] = ((code_i & 32'h0000707F) == 32'h00003013) ? i_SLTIU : '1;
+  always_comb i_func[21] = ((code_i & 32'h0000707F) == 32'h00004013) ? i_XORI : '1;
+  always_comb i_func[22] = ((code_i & 32'h0000707F) == 32'h00006013) ? i_ORI : '1;
+  always_comb i_func[23] = ((code_i & 32'h0000707F) == 32'h00007013) ? i_ANDI : '1;
+  always_comb i_func[24] = ((code_i & 32'hFE00707F) == 32'h00001013) ? i_SLLI : '1;
+  always_comb i_func[25] = ((code_i & 32'hFE00707F) == 32'h00005013) ? i_SRLI : '1;
+  always_comb i_func[26] = ((code_i & 32'hFE00707F) == 32'h40005013) ? i_SRAI : '1;
+  always_comb i_func[27] = ((code_i & 32'hFE00707F) == 32'h00000033) ? i_ADD : '1;
+  always_comb i_func[28] = ((code_i & 32'hFE00707F) == 32'h40000033) ? i_SUB : '1;
+  always_comb i_func[29] = ((code_i & 32'hFE00707F) == 32'h00001033) ? i_SLL : '1;
+  always_comb i_func[30] = ((code_i & 32'hFE00707F) == 32'h00002033) ? i_SLT : '1;
+  always_comb i_func[31] = ((code_i & 32'hFE00707F) == 32'h00003033) ? i_SLTU : '1;
+  always_comb i_func[32] = ((code_i & 32'hFE00707F) == 32'h00004033) ? i_XOR : '1;
+  always_comb i_func[33] = ((code_i & 32'hFE00707F) == 32'h00005033) ? i_SRL : '1;
+  always_comb i_func[34] = ((code_i & 32'hFE00707F) == 32'h40005033) ? i_SRA : '1;
+  always_comb i_func[35] = ((code_i & 32'hFE00707F) == 32'h00006033) ? i_OR : '1;
+  always_comb i_func[36] = ((code_i & 32'hFE00707F) == 32'h00007033) ? i_AND : '1;
+  always_comb i_func[37] = ((code_i & 32'h0000707F) == 32'h0000000F) ? i_FENCE : '1;
+  always_comb i_func[38] = ((code_i & 32'hFFFFFFFF) == 32'h8330000F) ? i_FENCE_TSO : '1;
+  always_comb i_func[39] = ((code_i & 32'hFFFFFFFF) == 32'h0100000F) ? i_PAUSE : '1;
+  always_comb i_func[40] = ((code_i & 32'hFFFFFFFF) == 32'h00000073) ? i_ECALL : '1;
+  always_comb i_func[41] = ((code_i & 32'hFFFFFFFF) == 32'h00100073) ? i_EBREAK : '1;
+  always_comb i_func[42] = ((code_i & 32'h0000707F) == 32'h00006003) ? i_LWU : '1;
+  always_comb i_func[43] = ((code_i & 32'h0000707F) == 32'h00003003) ? i_LD : '1;
+  always_comb i_func[44] = ((code_i & 32'h0000707F) == 32'h00003023) ? i_SD : '1;
+  always_comb i_func[45] = ((code_i & 32'h0000707F) == 32'h0000001B) ? i_ADDIW : '1;
+  always_comb i_func[46] = ((code_i & 32'hFE00707F) == 32'h0000101B) ? i_SLLIW : '1;
+  always_comb i_func[47] = ((code_i & 32'hFE00707F) == 32'h0000501B) ? i_SRLIW : '1;
+  always_comb i_func[48] = ((code_i & 32'hFE00707F) == 32'h4000501B) ? i_SRAIW : '1;
+  always_comb i_func[49] = ((code_i & 32'hFE00707F) == 32'h0000003B) ? i_ADDW : '1;
+  always_comb i_func[50] = ((code_i & 32'hFE00707F) == 32'h4000003B) ? i_SUBW : '1;
+  always_comb i_func[51] = ((code_i & 32'hFE00707F) == 32'h0000103B) ? i_SLLW : '1;
+  always_comb i_func[52] = ((code_i & 32'hFE00707F) == 32'h0000503B) ? i_SRLW : '1;
+  always_comb i_func[53] = ((code_i & 32'hFE00707F) == 32'h4000503B) ? i_SRAW : '1;
+  always_comb i_func[54] = ((code_i & 32'h0000707F) == 32'h00001073) ? i_CSRRW : '1;
+  always_comb i_func[55] = ((code_i & 32'h0000707F) == 32'h00002073) ? i_CSRRS : '1;
+  always_comb i_func[56] = ((code_i & 32'h0000707F) == 32'h00003073) ? i_CSRRC : '1;
+  always_comb i_func[57] = ((code_i & 32'h0000707F) == 32'h00005073) ? i_CSRRWI : '1;
+  always_comb i_func[58] = ((code_i & 32'h0000707F) == 32'h00006073) ? i_CSRRSI : '1;
+  always_comb i_func[59] = ((code_i & 32'h0000707F) == 32'h00007073) ? i_CSRRCI : '1;
+  always_comb i_func[60] = ((code_i & 32'hFE00707F) == 32'h02000033) ? i_MUL : '1;
+  always_comb i_func[61] = ((code_i & 32'hFE00707F) == 32'h02001033) ? i_MULH : '1;
+  always_comb i_func[62] = ((code_i & 32'hFE00707F) == 32'h02002033) ? i_MULHSU : '1;
+  always_comb i_func[63] = ((code_i & 32'hFE00707F) == 32'h02003033) ? i_MULHU : '1;
+  always_comb i_func[64] = ((code_i & 32'hFE00707F) == 32'h02004033) ? i_DIV : '1;
+  always_comb i_func[65] = ((code_i & 32'hFE00707F) == 32'h02005033) ? i_DIVU : '1;
+  always_comb i_func[66] = ((code_i & 32'hFE00707F) == 32'h02006033) ? i_REM : '1;
+  always_comb i_func[67] = ((code_i & 32'hFE00707F) == 32'h02007033) ? i_REMU : '1;
+  always_comb i_func[68] = ((code_i & 32'hFE00707F) == 32'h0200003B) ? i_MULW : '1;
+  always_comb i_func[69] = ((code_i & 32'hFE00707F) == 32'h0200403B) ? i_DIVW : '1;
+  always_comb i_func[70] = ((code_i & 32'hFE00707F) == 32'h0200503B) ? i_DIVUW : '1;
+  always_comb i_func[71] = ((code_i & 32'hFE00707F) == 32'h0200603B) ? i_REMW : '1;
+  always_comb i_func[72] = ((code_i & 32'hFE00707F) == 32'h0200703B) ? i_REMUW : '1;
+  always_comb i_func[73] = ((code_i & 32'hF9F0707F) == 32'h1000202F) ? i_LR_W : '1;
+  always_comb i_func[74] = ((code_i & 32'hF800707F) == 32'h1800202F) ? i_SC_W : '1;
+  always_comb i_func[75] = ((code_i & 32'hF800707F) == 32'h0800202F) ? i_AMOSWAP_W : '1;
+  always_comb i_func[76] = ((code_i & 32'hF800707F) == 32'h0000202F) ? i_AMOADD_W : '1;
+  always_comb i_func[77] = ((code_i & 32'hF800707F) == 32'h2000202F) ? i_AMOXOR_W : '1;
+  always_comb i_func[78] = ((code_i & 32'hF800707F) == 32'h6000202F) ? i_AMOAND_W : '1;
+  always_comb i_func[79] = ((code_i & 32'hF800707F) == 32'h4000202F) ? i_AMOOR_W : '1;
+  always_comb i_func[80] = ((code_i & 32'hF800707F) == 32'h8000202F) ? i_AMOMIN_W : '1;
+  always_comb i_func[81] = ((code_i & 32'hF800707F) == 32'hA000202F) ? i_AMOMAX_W : '1;
+  always_comb i_func[82] = ((code_i & 32'hF800707F) == 32'hC000202F) ? i_AMOMINU_W : '1;
+  always_comb i_func[83] = ((code_i & 32'hF800707F) == 32'hE000202F) ? i_AMOMAXU_W : '1;
+  always_comb i_func[84] = ((code_i & 32'hF9F0707F) == 32'h1000302F) ? i_LR_D : '1;
+  always_comb i_func[85] = ((code_i & 32'hF800707F) == 32'h1800302F) ? i_SC_D : '1;
+  always_comb i_func[86] = ((code_i & 32'hF800707F) == 32'h0800302F) ? i_AMOSWAP_D : '1;
+  always_comb i_func[87] = ((code_i & 32'hF800707F) == 32'h0000302F) ? i_AMOADD_D : '1;
+  always_comb i_func[88] = ((code_i & 32'hF800707F) == 32'h2000302F) ? i_AMOXOR_D : '1;
+  always_comb i_func[89] = ((code_i & 32'hF800707F) == 32'h6000302F) ? i_AMOAND_D : '1;
+  always_comb i_func[90] = ((code_i & 32'hF800707F) == 32'h4000302F) ? i_AMOOR_D : '1;
+  always_comb i_func[91] = ((code_i & 32'hF800707F) == 32'h8000302F) ? i_AMOMIN_D : '1;
+  always_comb i_func[92] = ((code_i & 32'hF800707F) == 32'hA000302F) ? i_AMOMAX_D : '1;
+  always_comb i_func[93] = ((code_i & 32'hF800707F) == 32'hC000302F) ? i_AMOMINU_D : '1;
+  always_comb i_func[94] = ((code_i & 32'hF800707F) == 32'hE000302F) ? i_AMOMAXU_D : '1;
+  always_comb i_func[95] = ((code_i & 32'h0000707F) == 32'h00002007) ? i_FLW : '1;
+  always_comb i_func[96] = ((code_i & 32'h0000707F) == 32'h00002027) ? i_FSW : '1;
+  always_comb i_func[97] = ((code_i & 32'h0600007F) == 32'h00000043) ? i_FMADD_S : '1;
+  always_comb i_func[98] = ((code_i & 32'h0600007F) == 32'h00000047) ? i_FMSUB_S : '1;
+  always_comb i_func[99] = ((code_i & 32'h0600007F) == 32'h0000004B) ? i_FNMSUB_S : '1;
+  always_comb i_func[100] = ((code_i & 32'h0600007F) == 32'h0000004F) ? i_FNMADD_S : '1;
+  always_comb i_func[101] = ((code_i & 32'hFE00007F) == 32'h00000053) ? i_FADD_S : '1;
+  always_comb i_func[102] = ((code_i & 32'hFE00007F) == 32'h08000053) ? i_FSUB_S : '1;
+  always_comb i_func[103] = ((code_i & 32'hFE00007F) == 32'h10000053) ? i_FMUL_S : '1;
+  always_comb i_func[104] = ((code_i & 32'hFE00007F) == 32'h18000053) ? i_FDIV_S : '1;
+  always_comb i_func[105] = ((code_i & 32'hFFF0007F) == 32'h58000053) ? i_FSQRT_S : '1;
+  always_comb i_func[106] = ((code_i & 32'hFE00707F) == 32'h20000053) ? i_FSGNJ_S : '1;
+  always_comb i_func[107] = ((code_i & 32'hFE00707F) == 32'h20001053) ? i_FSGNJN_S : '1;
+  always_comb i_func[108] = ((code_i & 32'hFE00707F) == 32'h20002053) ? i_FSGNJX_S : '1;
+  always_comb i_func[109] = ((code_i & 32'hFE00707F) == 32'h28000053) ? i_FMIN_S : '1;
+  always_comb i_func[110] = ((code_i & 32'hFE00707F) == 32'h28001053) ? i_FMAX_S : '1;
+  always_comb i_func[111] = ((code_i & 32'hFFF0007F) == 32'hC0000053) ? i_FCVT_W_S : '1;
+  always_comb i_func[112] = ((code_i & 32'hFFF0007F) == 32'hC0100053) ? i_FCVT_WU_S : '1;
+  always_comb i_func[113] = ((code_i & 32'hFFF0707F) == 32'hE0000053) ? i_FMV_X_W : '1;
+  always_comb i_func[114] = ((code_i & 32'hFE00707F) == 32'hA0002053) ? i_FEQ_S : '1;
+  always_comb i_func[115] = ((code_i & 32'hFE00707F) == 32'hA0001053) ? i_FLT_S : '1;
+  always_comb i_func[116] = ((code_i & 32'hFE00707F) == 32'hA0000053) ? i_FLE_S : '1;
+  always_comb i_func[117] = ((code_i & 32'hFFF0707F) == 32'hE0001053) ? i_FCLASS_S : '1;
+  always_comb i_func[118] = ((code_i & 32'hFFF0007F) == 32'hD0000053) ? i_FCVT_S_W : '1;
+  always_comb i_func[119] = ((code_i & 32'hFFF0007F) == 32'hD0100053) ? i_FCVT_S_WU : '1;
+  always_comb i_func[120] = ((code_i & 32'hFFF0707F) == 32'hF0000053) ? i_FMV_W_X : '1;
+  always_comb i_func[121] = ((code_i & 32'hFFF0007F) == 32'hC0200053) ? i_FCVT_L_S : '1;
+  always_comb i_func[122] = ((code_i & 32'hFFF0007F) == 32'hC0300053) ? i_FCVT_LU_S : '1;
+  always_comb i_func[123] = ((code_i & 32'hFFF0007F) == 32'hD0200053) ? i_FCVT_S_L : '1;
+  always_comb i_func[124] = ((code_i & 32'hFFF0007F) == 32'hD0300053) ? i_FCVT_S_LU : '1;
+  always_comb i_func[125] = ((code_i & 32'h0000707F) == 32'h00003007) ? i_FLD : '1;
+  always_comb i_func[126] = ((code_i & 32'h0000707F) == 32'h00003027) ? i_FSD : '1;
+  always_comb i_func[127] = ((code_i & 32'h0600007F) == 32'h02000043) ? i_FMADD_D : '1;
+  always_comb i_func[128] = ((code_i & 32'h0600007F) == 32'h02000047) ? i_FMSUB_D : '1;
+  always_comb i_func[129] = ((code_i & 32'h0600007F) == 32'h0200004B) ? i_FNMSUB_D : '1;
+  always_comb i_func[130] = ((code_i & 32'h0600007F) == 32'h0200004F) ? i_FNMADD_D : '1;
+  always_comb i_func[131] = ((code_i & 32'hFE00007F) == 32'h02000053) ? i_FADD_D : '1;
+  always_comb i_func[132] = ((code_i & 32'hFE00007F) == 32'h0A000053) ? i_FSUB_D : '1;
+  always_comb i_func[133] = ((code_i & 32'hFE00007F) == 32'h12000053) ? i_FMUL_D : '1;
+  always_comb i_func[134] = ((code_i & 32'hFE00007F) == 32'h1A000053) ? i_FDIV_D : '1;
+  always_comb i_func[135] = ((code_i & 32'hFFF0007F) == 32'h5A000053) ? i_FSQRT_D : '1;
+  always_comb i_func[136] = ((code_i & 32'hFE00707F) == 32'h22000053) ? i_FSGNJ_D : '1;
+  always_comb i_func[137] = ((code_i & 32'hFE00707F) == 32'h22001053) ? i_FSGNJN_D : '1;
+  always_comb i_func[138] = ((code_i & 32'hFE00707F) == 32'h22002053) ? i_FSGNJX_D : '1;
+  always_comb i_func[139] = ((code_i & 32'hFE00707F) == 32'h2A000053) ? i_FMIN_D : '1;
+  always_comb i_func[140] = ((code_i & 32'hFE00707F) == 32'h2A001053) ? i_FMAX_D : '1;
+  always_comb i_func[141] = ((code_i & 32'hFFF0007F) == 32'h40100053) ? i_FCVT_S_D : '1;
+  always_comb i_func[142] = ((code_i & 32'hFFF0007F) == 32'h42000053) ? i_FCVT_D_S : '1;
+  always_comb i_func[143] = ((code_i & 32'hFE00707F) == 32'hA2002053) ? i_FEQ_D : '1;
+  always_comb i_func[144] = ((code_i & 32'hFE00707F) == 32'hA2001053) ? i_FLT_D : '1;
+  always_comb i_func[145] = ((code_i & 32'hFE00707F) == 32'hA2000053) ? i_FLE_D : '1;
+  always_comb i_func[146] = ((code_i & 32'hFFF0707F) == 32'hE2001053) ? i_FCLASS_D : '1;
+  always_comb i_func[147] = ((code_i & 32'hFFF0007F) == 32'hC2000053) ? i_FCVT_W_D : '1;
+  always_comb i_func[148] = ((code_i & 32'hFFF0007F) == 32'hC2100053) ? i_FCVT_WU_D : '1;
+  always_comb i_func[149] = ((code_i & 32'hFFF0007F) == 32'hD2000053) ? i_FCVT_D_W : '1;
+  always_comb i_func[150] = ((code_i & 32'hFFF0007F) == 32'hD2100053) ? i_FCVT_D_WU : '1;
+  always_comb i_func[151] = ((code_i & 32'hFFF0007F) == 32'hC2200053) ? i_FCVT_L_D : '1;
+  always_comb i_func[152] = ((code_i & 32'hFFF0007F) == 32'hC2300053) ? i_FCVT_LU_D : '1;
+  always_comb i_func[153] = ((code_i & 32'hFFF0707F) == 32'hE2000053) ? i_FMV_X_D : '1;
+  always_comb i_func[154] = ((code_i & 32'hFFF0007F) == 32'hD2200053) ? i_FCVT_D_L : '1;
+  always_comb i_func[155] = ((code_i & 32'hFFF0007F) == 32'hD2300053) ? i_FCVT_D_LU : '1;
+  always_comb i_func[156] = ((code_i & 32'hFFF0707F) == 32'hF2000053) ? i_FMV_D_X : '1;
 
   // final AND reduction
   always_comb begin
