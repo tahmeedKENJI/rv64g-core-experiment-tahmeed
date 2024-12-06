@@ -24,6 +24,7 @@ help:
 	@echo -e "\033[1;32mmake simulate TOP=<top_module_name>\033[0m open new or existing rtl design"
 	@echo -e "\033[1;32mmake wave\033[0m open dump.vcd from last simulation"
 	@echo -e "\033[1;32mmake lint\033[0m for linting"
+	@echo -e "\033[1;32mmake rtl_init_sim RTL=<module_name>\033[0m to run initial simulate of the rtl"
 	@echo -e "\033[1;32mmake sta RTL=<module_name>\033[0m to run static timing analysis @ 100MHz clk_i"
 	@echo -e "\033[1;32mmake update_doc_list\033[0m to update the documents"
 
@@ -111,6 +112,9 @@ source/$(RTL).sv:
 .PHONY: simulate
 simulate: print_logo soft_clean xvlog xelab xsim print_logo
 
+.PHONY: rtl_init_sim 
+rtl_init_sim: print_logo soft_clean xvlog init_xelab init_xsim print_logo
+
 define compile
   $(eval SUB_LIB := $(shell echo "$(wordlist 1, 25,$(COMPILE_LIB))"))
   cd build; xvlog $(INC_DIR) -sv $(SUB_LIB) --nolog $(XVLOG_DEFS) | tee -a ../log/$(TOP)_$(CONFIG).log
@@ -132,6 +136,14 @@ else
 	@cd build; xelab $(TOP) -s $(TOP) --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
 endif
 
+.PHONY: init_xelab
+init_xelab:
+ifeq ($(RTL), )
+	@$(error RTL not set)
+else
+	@cd build; xelab $(RTL) -s $(RTL) --nolog
+endif
+
 .PHONY: xsim
 xsim: test/$(TOP)/xsim_$(CONFIG)_cfg
 ifeq ($(TOP), )
@@ -139,6 +151,14 @@ ifeq ($(TOP), )
 else
 	@echo -n "$(TOP) $(CONFIG)" > build/config
 	@cd build; xsim $(TOP) --runall --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
+endif
+
+.PHONY: init_xsim
+init_xsim:
+ifeq ($(RTL), )
+	@$(error RTL not set)
+else
+	@cd build; xsim $(RTL) --runall --nolog
 endif
 
 define make_clk_i_100_MHz
