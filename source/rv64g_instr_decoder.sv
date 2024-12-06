@@ -148,7 +148,7 @@ module rv64g_instr_decoder #(
         .OP_WIDTH(20),                                                                            \
         .MATCH_TRUE(``__OUT__``),                                                                 \
         .MATCH_FALSE('1)                                                                          \
-    ) u_constant_compare_``__IDX__`` (                                                            \
+    ) u_constant_compare_``__IDX__``_``__OUT__`` (                                                \
         .in_i (code_i),                                                                           \
         .out_o(i_func[``__IDX__``])                                                               \
     );                                                                                            \
