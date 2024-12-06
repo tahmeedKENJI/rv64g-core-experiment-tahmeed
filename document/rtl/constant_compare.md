@@ -18,7 +18,7 @@ of match is also predefined for both true and false.
 |Name|Type|Dimension|Default Value|Description|
 |-|-|-|-|-|
 |IP_WIDTH|int||10|Width of the input signal|
-|CMP_ENABLES|bit [IP_WIDTH-1:0]||'h0C3|Bitmask for comparison enable bits|
+|CMP_ENABLES|bit [IP_WIDTH-1:0]||'h0C3|Bitmask to enable comparisons|
 |EXP_RESULT|bit [IP_WIDTH-1:0]||'h082|Expected result for comparison|
 |OP_WIDTH|int||2|Width of the output signal|
 |MATCH_TRUE|bit [OP_WIDTH-1:0]||1|Output value when there is a match|
