@@ -29,7 +29,8 @@ module constant_compare #(
   // Function to count the number of ones in CMP_ENABLES
   function automatic int_t count_ones();
     int_t count = 0;
-    foreach (CMP_ENABLES[i]) if (CMP_ENABLES[i]) count++;  // Increment count for each bit that is 1
+    // Increment count for each bit that is 1
+    foreach (CMP_ENABLES[i]) if (CMP_ENABLES[i]) count++;
     return count;
   endfunction
 
