@@ -313,14 +313,13 @@ module rv64g_instr_decoder #(
   `RV64G_INSTR_DECODER_CMP(156, 32'hFFF0707F, 32'hF2000053, i_FMV_D_X)
 
   // final AND reduction
-  always_comb begin
-    i_func_final = '1;
-    for (int bit_idx = 0; bit_idx < 20; bit_idx++) begin
-      for (int func_idx = 0; func_idx < 157; func_idx++) begin
-        i_func_final[bit_idx] &= i_func[func_idx][bit_idx];
-      end
-    end
-  end
+  and_reduction #(
+      .NUM_ELEM  (157),
+      .ELEM_WIDTH(20)
+  ) u_and_reduction (
+      .ins_i(i_func),
+      .out_o(i_func_final)
+  );
 
   // extract function
   assign cmd_o.func = func_t'(i_func_final[7:0]);
