@@ -14,5 +14,4 @@
 [`rv64g_instr_decoder`](rv64g_instr_decoder.md)
 [`rv64g_instr_launcher`](rv64g_instr_launcher.md)
 [`rv64g_regfile`](rv64g_regfile.md)
-[`wrapper_rv64g_instr_decoder`](wrapper_rv64g_instr_decoder.md)
 [`xbar`](xbar.md)
