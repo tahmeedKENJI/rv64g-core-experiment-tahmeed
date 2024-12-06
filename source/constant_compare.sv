@@ -9,70 +9,84 @@ See LICENSE file in the project root for full license information
 */
 
 module constant_compare #(
-    parameter int                IP_WIDTH    = 10,     // Width of the input signal
-    parameter bit [IP_WIDTH-1:0] CMP_ENABLES = 'h0C3,  // Bitmask for comparison enable bits
-    parameter bit [IP_WIDTH-1:0] EXP_RESULT  = 'h082,  // Expected result for comparison
-    parameter int                OP_WIDTH    = 2,      // Width of the output signal
-    parameter bit [OP_WIDTH-1:0] MATCH_TRUE  = 1,      // Output value when there is a match
-    parameter bit [OP_WIDTH-1:0] MATCH_FALSE = 2       // Output value when there is no match
+    parameter int                IP_WIDTH    = 10,
+    parameter bit [IP_WIDTH-1:0] CMP_ENABLES = 'h0C3,
+    parameter bit [IP_WIDTH-1:0] EXP_RESULT  = 'h082,
+    parameter int                OP_WIDTH    = 2,
+    parameter bit [OP_WIDTH-1:0] MATCH_TRUE  = 1,
+    parameter bit [OP_WIDTH-1:0] MATCH_FALSE = 2
 ) (
-    input  logic [IP_WIDTH-1:0] in_i,  // Input signal
-    output logic [OP_WIDTH-1:0] out_o  // Output signal
+    input  logic [IP_WIDTH-1:0] in_i,
+    output logic [OP_WIDTH-1:0] out_o
 );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-LOCALPARAMS GENERATED
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  typedef bit [31:0] int_t;  // Type definition for a 32-bit integer
+  typedef bit [31:0] int_t;
 
-  // Function to count the number of ones in CMP_ENABLES
   function automatic int_t count_ones();
     int_t count = 0;
-    // Increment count for each bit that is 1
+
     foreach (CMP_ENABLES[i]) if (CMP_ENABLES[i]) count++;
     return count;
   endfunction
 
-  localparam int_t NumCompares = count_ones();  // Number of comparisons to perform
+  localparam int_t NumCompares = count_ones();
 
-  typedef int_t [NumCompares-1:0] index_t;  // Type definition for an index array
+  typedef int_t [NumCompares-1:0] index_t;
 
-  // Function to generate an index array based on CMP_ENABLES
   function automatic index_t gen_index();
     index_t idx;
     int j = 0;
     for (int i = 0; i < IP_WIDTH; i++) begin
       if (CMP_ENABLES[i]) begin
-        idx[j] = i;  // Store index of enabled comparisons
+        idx[j] = i;
         j++;
       end
     end
     return idx;
   endfunction
 
-  localparam index_t AndIndex = gen_index();  // Index array for enabled comparisons
+  localparam index_t AndIndex = gen_index();
+
+  typedef bit [NumCompares-1:0] pol_t;
+
+  function automatic pol_t gen_pol();
+    pol_t idx;
+    int   j = 0;
+    for (int i = 0; i < IP_WIDTH; i++) begin
+      if (CMP_ENABLES[i]) begin
+        idx[j] = EXP_RESULT[i];
+        j++;
+      end
+    end
+    return idx;
+  endfunction
+
+  localparam pol_t AndPol = gen_pol();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SIGNALS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  logic [NumCompares-1:0] and_array;  // Array to store ANDed results
-  logic                   is_match;  // Flag to indicate if there's a match
+  logic [NumCompares-1:0] and_array;
+  logic                   is_match;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // Assign values to and_array based on in_i and AndIndex
+
   always_comb begin
-    foreach (and_array[i]) and_array[i] = in_i[AndIndex[i]];
+    foreach (and_array[i]) and_array[i] = AndPol[i] ? in_i[AndIndex[i]] : ~in_i[AndIndex[i]];
   end
 
-  // Determine if there is any match
-  always_comb is_match = |and_array;
 
-  // Assign output based on is_match
+  always_comb is_match = &and_array;
+
+
   always_comb out_o = is_match ? MATCH_TRUE : MATCH_FALSE;
 
 endmodule
