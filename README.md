@@ -23,6 +23,8 @@ The RV64G Core is a 64-bit RISC-V compliant core designed in SystemVerilog. It i
 
 ### [Supported Instruction Set](./document/supported_instructions.md)
 
+### [Supported CSRs](./document/supported_csrs.md)
+
 ### [Module List](./document/rtl/modules.md)
 
 ### [Coding Guide Lines](./document/coding_guideline.md) ([verible-verilog-lint](https://github.com/chipsalliance/verible))
