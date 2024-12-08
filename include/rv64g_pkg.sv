@@ -207,6 +207,8 @@ package rv64g_pkg;
     FCVT_D_L,
     FCVT_D_LU,
     FMV_D_X,
+    MRET,
+    WFI,
     INVALID   = 'hFF
   } func_t;
 
@@ -374,6 +376,8 @@ package rv64g_pkg;
     i_FCVT_D_L  = {RIMM, ____, ____, ____, ____, KEEP, ____, KEEP, ____, FCVT_D_L},
     i_FCVT_D_LU = {RIMM, ____, ____, ____, ____, KEEP, ____, KEEP, ____, FCVT_D_LU},
     i_FMV_D_X   = {NONE, ____, ____, ____, ____, KEEP, ____, KEEP, ____, FMV_D_X},
+    i_MRET      = {NONE, KEEP, ____, ____, ____, ____, ____, ____, ____, MRET},
+    i_WFI       = {NONE, KEEP, ____, ____, ____, ____, ____, ____, ____, WFI},
     i_INVALID   = {NONE, ____, ____, ____, ____, ____, ____, ____, ____, INVALID}
     //             IMM_  jump  frs3  frs2  frs1  frd_  xrs2  xrs1  xrd_, Function
     //             19:16 15    14    13    12    11    10    9     8     7:0

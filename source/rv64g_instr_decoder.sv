@@ -62,7 +62,7 @@ module rv64g_instr_decoder #(
   logic [XLEN-1:0] timm;  // ATOMICS IMMEDIATE
   logic [XLEN-1:0] uimm;  // UTYPE INSTRUCTION IMMEDIATE
 
-  logic [19:0] i_func[157];  // internal function AND array
+  logic [19:0] i_func[159];  // internal function AND array
   logic [19:0] i_func_final;  // internal function final
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,6 +311,8 @@ module rv64g_instr_decoder #(
   `RV64G_INSTR_DECODER_CMP(154, 32'hFFF0007F, 32'hD2200053, i_FCVT_D_L)
   `RV64G_INSTR_DECODER_CMP(155, 32'hFFF0007F, 32'hD2300053, i_FCVT_D_LU)
   `RV64G_INSTR_DECODER_CMP(156, 32'hFFF0707F, 32'hF2000053, i_FMV_D_X)
+  `RV64G_INSTR_DECODER_CMP(157, 32'hFFFFFFFF, 32'h30200073, i_MRET)
+  `RV64G_INSTR_DECODER_CMP(158, 32'hFFFFFFFF, 32'h10500073, i_WFI)
 
   // final AND reduction
   and_reduction #(

@@ -61,12 +61,12 @@ endif
 build:
 	@mkdir -p build
 	@echo "*" > build/.gitignore
-	@git add build
+	@git add build > /dev/null 2>&1
 
 log:
 	@mkdir -p log
 	@echo "*" > log/.gitignore
-	@git add log
+	@git add log > /dev/null 2>&1
 
 submodules/sv-genesis/tb_model.sv:
 	@git submodule update --init --recursive --depth 1
@@ -267,7 +267,7 @@ update_doc_list: submodules/documenter/sv_documenter.py
 	@$(eval RTL_LIST = $(shell find source -name "*.sv"))
 	@echo "# List of Modules" > document/rtl/modules.md
 	@$(foreach file, $(RTL_LIST), make -s gen_doc FILE=$(file);)
-	@git add document/rtl
+	@git add document/rtl > /dev/null 2>&1
 
 submodules/documenter/sv_documenter.py:
 	@git submodule update --init --recursive --depth 1
@@ -299,7 +299,7 @@ pending_source_reviews:
 
 define source_commit_diff
 	$(eval hash := $(shell git log -1 $(shell find source -name "$(1).sv") | grep -e "^commit " | sed "s/^commit /$(1) /g"))
-	grep -r "$(hash)" source_change_logs > /dev/null || echo "$(hash)" >> temp_source_commit_diffs
+	grep -r "$(hash)" source_change_logs > /dev/null 2>&1 || echo "$(hash)" >> temp_source_commit_diffs
 endef
 
 #########################################################################################
@@ -346,9 +346,9 @@ copyright_check:
 	@cat temp_copyright_issues
 
 define copyright_check_file
-	(grep -ir "author" $(1) > /dev/null) || (echo "$(1) >> \"Author : Name (email)\"" >> temp_copyright_issues)
-	(grep -r "$(LINE_1)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_1)\"" >> temp_copyright_issues)
-	(grep -r "$(LINE_2)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_2)\"" >> temp_copyright_issues)
-	(grep -r "$(LINE_3)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_3)\"" >> temp_copyright_issues)
-	(grep -r "$(LINE_4)" $(1) > /dev/null) || (echo "$(1) >> \"$(LINE_4)\"" >> temp_copyright_issues)
+	(grep -ir "author" $(1) > /dev/null 2>&1) || (echo "$(1) >> \"Author : Name (email)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_1)" $(1) > /dev/null 2>&1) || (echo "$(1) >> \"$(LINE_1)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_2)" $(1) > /dev/null 2>&1) || (echo "$(1) >> \"$(LINE_2)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_3)" $(1) > /dev/null 2>&1) || (echo "$(1) >> \"$(LINE_3)\"" >> temp_copyright_issues)
+	(grep -r "$(LINE_4)" $(1) > /dev/null 2>&1) || (echo "$(1) >> \"$(LINE_4)\"" >> temp_copyright_issues)
 endef

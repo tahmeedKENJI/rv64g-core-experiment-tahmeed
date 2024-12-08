@@ -180,3 +180,7 @@
 `FCVT_D_L❗`
 `FCVT_D_LU❗`
 `FMV_D_X❗`
+
+## Interrupts
+`MRET❗`
+`WFI❗`
