@@ -54,9 +54,9 @@ module rv64g_regfile #(
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Read data from the specified source registers
-  always_comb rs1_data_o = regfile[rs1_addr_i];
-  always_comb rs2_data_o = regfile[rs2_addr_i];
-  always_comb rs3_data_o = regfile[rs3_addr_i];
+  always_comb rs1_data_o = r_locks[rs1_addr_i] ? regfile[rs1_addr_i] : wr_unlock_data_i;
+  always_comb rs2_data_o = r_locks[rs2_addr_i] ? regfile[rs2_addr_i] : wr_unlock_data_i;
+  always_comb rs3_data_o = r_locks[rs3_addr_i] ? regfile[rs3_addr_i] : wr_unlock_data_i;
 
   // Check if the unlock address is non-zero
   always_comb wr_unlock_addr_not_zero = |wr_unlock_addr_i;
@@ -79,7 +79,7 @@ module rv64g_regfile #(
   always_comb r_locks_next = (r_locks & unlock) | lock;
 
   // Pass the r_locks or '1 based on reset
-  always_comb locks_o = arst_ni ? r_locks : '1;
+  always_comb locks_o = arst_ni ? (wr_unlock_en_i ? (r_locks & unlock) : r_locks) : '1;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-SEQUENTIALS
