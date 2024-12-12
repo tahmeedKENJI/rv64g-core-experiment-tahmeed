@@ -90,6 +90,14 @@ module constant_compare #(
   always_comb is_match = &and_array;
 
   // Assign output based on is_match
-  always_comb out_o = is_match ? MATCH_TRUE : MATCH_FALSE;
+  if (OP_WIDTH > 1) begin : g_mux
+    always_comb out_o = is_match ? MATCH_TRUE : MATCH_FALSE;
+  end else begin : g_pass
+    if (MATCH_TRUE == 1 && MATCH_FALSE == 0) begin : g_pass
+      always_comb out_o = is_match;
+    end else begin : g_inv
+      always_comb out_o = ~is_match;
+    end
+  end
 
 endmodule
