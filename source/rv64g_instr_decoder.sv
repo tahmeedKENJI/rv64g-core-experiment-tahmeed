@@ -134,7 +134,7 @@ module rv64g_instr_decoder #(
   // UTYPE INSTRUCTION IMMEDIATE
   always_comb begin
     uimm = '0;
-    uimm[11:0] = code_i[31:12];
+    uimm[31:12] = code_i[31:12];
   end
 
   `define RV64G_INSTR_DECODER_CMP(__EXP__, __CMP__, __IDX__)                                      \
@@ -602,7 +602,6 @@ module rv64g_instr_decoder #(
   assign is_frs1 = cmd_o.func[FNMADD_S];
   assign is_frs1 = cmd_o.func[FNMSUB_D];
   assign is_frs1 = cmd_o.func[FNMSUB_S];
-  assign is_frs1 = cmd_o.func[FSD];
   assign is_frs1 = cmd_o.func[FSGNJ_D];
   assign is_frs1 = cmd_o.func[FSGNJ_S];
   assign is_frs1 = cmd_o.func[FSGNJN_D];
@@ -613,7 +612,6 @@ module rv64g_instr_decoder #(
   assign is_frs1 = cmd_o.func[FSQRT_S];
   assign is_frs1 = cmd_o.func[FSUB_D];
   assign is_frs1 = cmd_o.func[FSUB_S];
-  assign is_frs1 = cmd_o.func[FSW];
 
   always_comb begin
     cmd_o.rs1 = '0;
@@ -692,6 +690,8 @@ module rv64g_instr_decoder #(
   assign is_frs2 = cmd_o.func[FLE_S];
   assign is_frs2 = cmd_o.func[FLT_D];
   assign is_frs2 = cmd_o.func[FLT_S];
+  assign is_frs2 = cmd_o.func[FSW];
+  assign is_frs2 = cmd_o.func[FSD];
   assign is_frs2 = cmd_o.func[FMADD_D];
   assign is_frs2 = cmd_o.func[FMADD_S];
   assign is_frs2 = cmd_o.func[FMAX_D];
