@@ -109,7 +109,7 @@ module rv64g_instr_launcher_tb;
         // instr_in_i.rs3 <= $urandom_range(0, NUM_REGS-1);
         // instr_in_i.imm <= $urandom;
         // instr_in_i.pc <= $urandom;
-        instr_in_i.jump <= $urandom;
+        instr_in_i.blocking <= $urandom;
         instr_in_i.reg_req <= (1 << $urandom_range(
             0, NUM_REGS - 1
         )) | (1 << $urandom_range(

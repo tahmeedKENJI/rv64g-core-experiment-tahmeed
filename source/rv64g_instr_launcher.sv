@@ -120,7 +120,7 @@ module rv64g_instr_launcher #(
   for (genvar i = 0; i < NOS + 1; i++) begin : g_ckeckers
     reg_gnt_ckr #() u_reg_gnt_ckr (
         .pl_valid_i(pl_outs_valid[i]),
-        .jump_i(pl_outs[i].jump),
+        .blocking_i(pl_outs[i].blocking),
         .rd_i(pl_outs[i].rd),
         .reg_req_i(pl_outs[i].reg_req),
         .locks_i(locks[i]),
