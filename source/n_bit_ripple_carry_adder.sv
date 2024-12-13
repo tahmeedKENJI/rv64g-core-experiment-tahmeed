@@ -28,10 +28,17 @@ module n_bit_ripple_carry_adder #(
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   n_bit_c c_intermediate;
+  n_bit_c s_op2;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
   //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  generate
+    for (genvar i = 0; i < BIT_NUM; i++) begin : sgn_op
+      assign s_op2[i] = op2[i] ^ sgn_op2;
+    end
+  endgenerate
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -42,7 +49,7 @@ module n_bit_ripple_carry_adder #(
       if (i == 0) begin
         full_adder #() u_dut (
             .op1  (op1[i]),
-            .op2  (op2[i]),
+            .op2  (s_op2[i]),
             .c_in (sgn_op2),
             .sum  (sum[i]),
             .c_out(c_intermediate[i])
@@ -50,7 +57,7 @@ module n_bit_ripple_carry_adder #(
       end else if (i < BIT_NUM - 1) begin
         full_adder #() u_dut (
             .op1  (op1[i]),
-            .op2  (op2[i]),
+            .op2  (s_op2[i]),
             .c_in (c_intermediate[i-1]),
             .sum  (sum[i]),
             .c_out(c_intermediate[i])
@@ -58,7 +65,7 @@ module n_bit_ripple_carry_adder #(
       end else begin
         full_adder #() u_dut (
             .op1  (op1[i]),
-            .op2  (op2[i]),
+            .op2  (s_op2[i]),
             .c_in (c_intermediate[i-1]),
             .sum  (sum[i]),
             .c_out(carry_o)
