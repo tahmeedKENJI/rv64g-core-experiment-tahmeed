@@ -38,8 +38,6 @@
 `OR❗`
 `AND❗`
 `FENCE❗`
-`FENCE_TSO❗`
-`PAUSE❗`
 `ECALL❗`
 `EBREAK❗`
 

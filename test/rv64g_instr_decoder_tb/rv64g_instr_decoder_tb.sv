@@ -138,8 +138,6 @@ module rv64g_instr_decoder_tb;
       32'b0000000zzzzzzzzzz110zzzzz0110011: exp_cmd_o.func[OR] = '1;
       32'b0000000zzzzzzzzzz111zzzzz0110011: exp_cmd_o.func[AND] = '1;
       32'bzzzzzzzzzzzzzzzzz000zzzzz0001111: exp_cmd_o.func[FENCE] = '1;
-      32'b10000011001100000000000000001111: exp_cmd_o.func[FENCE_TSO] = '1;
-      32'b00000001000000000000000000001111: exp_cmd_o.func[PAUSE] = '1;
       32'b00000000000000000000000001110011: exp_cmd_o.func[ECALL] = '1;
       32'b00000000000100000000000001110011: exp_cmd_o.func[EBREAK] = '1;
       32'bzzzzzzzzzzzzzzzzz110zzzzz0000011: exp_cmd_o.func[LWU] = '1;
@@ -279,7 +277,6 @@ module rv64g_instr_decoder_tb;
     |(exp_cmd_o.func[BLTU])
     |(exp_cmd_o.func[BGEU])
     |(exp_cmd_o.func[FENCE])
-    |(exp_cmd_o.func[FENCE_TSO])
     |(exp_cmd_o.func[MRET])
     |(exp_cmd_o.func[WFI]);
   end
@@ -326,8 +323,6 @@ module rv64g_instr_decoder_tb;
       (1 << OR):        reg_state = 12'o1110;
       (1 << AND):       reg_state = 12'o1110;
       (1 << FENCE):     reg_state = 12'o1100;
-      (1 << FENCE_TSO): reg_state = 12'o0000;
-      (1 << PAUSE):     reg_state = 12'o0000;
       (1 << ECALL):     reg_state = 12'o0000;
       (1 << EBREAK):    reg_state = 12'o0000;
       (1 << LWU):       reg_state = 12'o1100;
@@ -492,8 +487,6 @@ module rv64g_instr_decoder_tb;
       (1 << OR):        imm_src_infer = NONE;
       (1 << AND):       imm_src_infer = NONE;
       (1 << FENCE):     imm_src_infer = IIMM;
-      (1 << FENCE_TSO): imm_src_infer = IIMM;
-      (1 << PAUSE):     imm_src_infer = IIMM;
       (1 << ECALL):     imm_src_infer = IIMM;
       (1 << EBREAK):    imm_src_infer = IIMM;
       (1 << LWU):       imm_src_infer = IIMM;
@@ -850,8 +843,6 @@ module rv64g_instr_decoder_tb;
           1: code_i <= (($urandom & 'h01FF8F80) | 'h00006033);  // OR
           1: code_i <= (($urandom & 'h01FF8F80) | 'h00007033);  // AND
           1: code_i <= (($urandom & 'hFFFF8F80) | 'h0000000F);  // FENCE
-          1: code_i <= (($urandom & 'h00000000) | 'h8330000F);  // FENCE_TSO
-          1: code_i <= (($urandom & 'h00000000) | 'h0100000F);  // PAUSE
           1: code_i <= (($urandom & 'h00000000) | 'h00000073);  // ECALL
           1: code_i <= (($urandom & 'h00000000) | 'h00100073);  // EBREAK
           1: code_i <= (($urandom & 'hFFFF8F80) | 'h00006003);  // LWU
@@ -992,11 +983,12 @@ module rv64g_instr_decoder_tb;
       repeat (5000) @(posedge clk_i);
       $write("\033[1;33m%0t Remaining:\033[0m", $realtime);
       keep_going = 0;
-      foreach (hit_count[i])
-      if (hit_count[i] < 100) begin
-        keep_going = 1;
-        instr = func_t'(i);
-        $write(" %s", instr.name);
+      foreach (hit_count[i]) begin
+        if (hit_count[i] < 1000) begin
+          keep_going = 1;
+          instr = func_t'(i);
+          $write(" %s", instr.name);
+        end
       end
       $display("\n");
     end

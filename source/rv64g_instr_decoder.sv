@@ -190,8 +190,6 @@ module rv64g_instr_decoder #(
   `RV64G_INSTR_DECODER_CMP(32'hFE00707F, 32'h00006033, OR)
   `RV64G_INSTR_DECODER_CMP(32'hFE00707F, 32'h00007033, AND)
   `RV64G_INSTR_DECODER_CMP(32'h0000707F, 32'h0000000F, FENCE)
-  `RV64G_INSTR_DECODER_CMP(32'hFFFFFFFF, 32'h8330000F, FENCE_TSO)
-  `RV64G_INSTR_DECODER_CMP(32'hFFFFFFFF, 32'h0100000F, PAUSE)
   `RV64G_INSTR_DECODER_CMP(32'hFFFFFFFF, 32'h00000073, ECALL)
   `RV64G_INSTR_DECODER_CMP(32'hFFFFFFFF, 32'h00100073, EBREAK)
   `RV64G_INSTR_DECODER_CMP(32'h0000707F, 32'h00006003, LWU)
@@ -764,7 +762,6 @@ module rv64g_instr_decoder #(
   assign is_iimm = cmd_o.func[EBREAK];
   assign is_iimm = cmd_o.func[ECALL];
   assign is_iimm = cmd_o.func[FENCE];
-  assign is_iimm = cmd_o.func[FENCE_TSO];
   assign is_iimm = cmd_o.func[FLD];
   assign is_iimm = cmd_o.func[FLW];
   assign is_iimm = cmd_o.func[JALR];
@@ -776,7 +773,6 @@ module rv64g_instr_decoder #(
   assign is_iimm = cmd_o.func[LW];
   assign is_iimm = cmd_o.func[LWU];
   assign is_iimm = cmd_o.func[ORI];
-  assign is_iimm = cmd_o.func[PAUSE];
   assign is_iimm = cmd_o.func[SLTI];
   assign is_iimm = cmd_o.func[SLTIU];
   assign is_iimm = cmd_o.func[XORI];
@@ -883,7 +879,6 @@ module rv64g_instr_decoder #(
   assign is_blocking = cmd_o.func[JAL];
   assign is_blocking = cmd_o.func[JALR];
   assign is_blocking = cmd_o.func[FENCE];
-  assign is_blocking = cmd_o.func[FENCE_TSO];
   assign is_blocking = cmd_o.func[MRET];
   assign is_blocking = cmd_o.func[WFI];
 
