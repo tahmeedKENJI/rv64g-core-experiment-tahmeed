@@ -15,6 +15,10 @@ package rv64g_pkg;
   // PARAMETERS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
+  parameter int ILEN = 32;
+
+  parameter int CILEN = 16;
+
   parameter int XLEN = 64;
   parameter int FLEN = 64;
 
@@ -73,8 +77,8 @@ package rv64g_pkg;
     // The `pc` hold's the physical address of the current instruction.
     logic [XLEN-1:0] pc;
 
-    // The `jump` field is set high when the current instruction can cause branch/jump.
-    logic jump;
+    // The `blocking` field is set high when the current instruction must block next instructions
+    logic blocking;
 
     // The `reg_req` field is a flag that indicates the registers that are required for the current
     // instruction

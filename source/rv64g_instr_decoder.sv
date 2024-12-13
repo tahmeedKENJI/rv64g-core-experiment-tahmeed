@@ -7,7 +7,8 @@ This module is mean to decode instruction into the decoded_instr_t as mentioned 
 - The `imm` has multi-purpose such signed/unsigned immediate, shift, csr_addr, etc. based on the
   `func`.
 - The `pc` hold's the physical address of the current instruction.
-- The `jump` field is set high when the current instruction can cause branch/jump.
+- The `blocking` field is set high when the current instruction must block next instructions from
+  execution.
 - The `reg_req` field is a flag that indicates the registers that are required for the current
   instruction
 
@@ -137,7 +138,7 @@ module rv64g_instr_decoder #(
     uimm[31:12] = code_i[31:12];
   end
 
-  `define RV64G_INSTR_DECODER_CMP(__EXP__, __CMP__, __IDX__)                                      \
+  `define RV64G_INSTR_DECODER_CMP(__CMP__, __EXP__, __IDX__)                                      \
     constant_compare #(                                                                           \
         .IP_WIDTH(32),                                                                            \
         .CMP_ENABLES(``__CMP__``),                                                                \
@@ -867,28 +868,31 @@ module rv64g_instr_decoder #(
     else if (is_simm) cmd_o.imm = simm;
     else if (is_timm) cmd_o.imm = timm;
     else if (is_uimm) cmd_o.imm = uimm;
+    else cmd_o.imm = '0;
   end
 
   always_comb cmd_o.pc = pc_i;
 
-  wor is_jump;
-  assign is_jump = cmd_o.func[BEQ];
-  assign is_jump = cmd_o.func[BGE];
-  assign is_jump = cmd_o.func[BGEU];
-  assign is_jump = cmd_o.func[BLT];
-  assign is_jump = cmd_o.func[BLTU];
-  assign is_jump = cmd_o.func[BNE];
-  assign is_jump = cmd_o.func[JAL];
-  assign is_jump = cmd_o.func[JALR];
-  assign is_jump = cmd_o.func[MRET];
-  assign is_jump = cmd_o.func[WFI];
+  wor is_blocking;
+  assign is_blocking = cmd_o.func[BEQ];
+  assign is_blocking = cmd_o.func[BGE];
+  assign is_blocking = cmd_o.func[BGEU];
+  assign is_blocking = cmd_o.func[BLT];
+  assign is_blocking = cmd_o.func[BLTU];
+  assign is_blocking = cmd_o.func[BNE];
+  assign is_blocking = cmd_o.func[JAL];
+  assign is_blocking = cmd_o.func[JALR];
+  assign is_blocking = cmd_o.func[FENCE];
+  assign is_blocking = cmd_o.func[FENCE_TSO];
+  assign is_blocking = cmd_o.func[MRET];
+  assign is_blocking = cmd_o.func[WFI];
 
   always_comb begin
-    cmd_o.jump = is_jump;
+    cmd_o.blocking = is_blocking;
   end
 
   always_comb begin
-    cmd_o.reg_req            = {64{cmd_o.jump}};
+    cmd_o.reg_req            = {64{cmd_o.blocking}};
     cmd_o.reg_req[cmd_o.rd]  = '1;
     cmd_o.reg_req[cmd_o.rs1] = '1;
     cmd_o.reg_req[cmd_o.rs2] = '1;

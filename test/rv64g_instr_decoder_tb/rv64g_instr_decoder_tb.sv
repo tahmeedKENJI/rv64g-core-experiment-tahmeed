@@ -26,8 +26,8 @@ module rv64g_instr_decoder_tb;
   //-LOCALPARAMS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  localparam int Clen = 32;
-  localparam int NumInstr = 158;
+  localparam int Clen = rv64g_pkg::ILEN;
+  localparam int NumInstr = rv64g_pkg::TOTAL_FUNCS;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-TYPEDEFS
@@ -68,7 +68,7 @@ module rv64g_instr_decoder_tb;
   bit rs1_ok;
   bit rs2_ok;
   bit rs3_ok;
-  bit jump_ok;
+  bit blocking_ok;
   bit imm_ok;
   bit reg_req_ok;
   int tx_pc;
@@ -77,19 +77,18 @@ module rv64g_instr_decoder_tb;
   int tx_rs1;
   int tx_rs2;
   int tx_rs3;
-  int tx_jump;
+  int tx_blocking;
   int tx_imm;
   int tx_reg_req;
   int tx_all;
 
   logic [256-1:0] instr_check;
-  int count = 0;
 
   logic [11:0] reg_state;
   imm_src_t imm_src_infer;
   logic [XLEN-1:0] stand_imm;  // stand-in immediate
 
-  event e_all_instr_checked;
+  int hit_count[NumInstr];
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
@@ -267,10 +266,10 @@ module rv64g_instr_decoder_tb;
     endcase
   end
 
-  // check for jump condition
-  always_comb begin : jump
-    exp_cmd_o.jump = '0;
-    exp_cmd_o.jump =
+  // check for blocking condition
+  always_comb begin : blocking
+    exp_cmd_o.blocking = '0;
+    exp_cmd_o.blocking =
      (exp_cmd_o.func[JAL])
     |(exp_cmd_o.func[JALR])
     |(exp_cmd_o.func[BEQ])
@@ -279,6 +278,8 @@ module rv64g_instr_decoder_tb;
     |(exp_cmd_o.func[BGE])
     |(exp_cmd_o.func[BLTU])
     |(exp_cmd_o.func[BGEU])
+    |(exp_cmd_o.func[FENCE])
+    |(exp_cmd_o.func[FENCE_TSO])
     |(exp_cmd_o.func[MRET])
     |(exp_cmd_o.func[WFI]);
   end
@@ -433,7 +434,7 @@ module rv64g_instr_decoder_tb;
       (1 << FCVT_D_WU): reg_state = 12'o2100;
       (1 << FCVT_D_L):  reg_state = 12'o2100;
       (1 << FCVT_D_LU): reg_state = 12'o2100;
-      (1 << FCVT_S_D):  reg_state = 12'o2210;
+      (1 << FCVT_S_D):  reg_state = 12'o2200;
       (1 << FCVT_D_S):  reg_state = 12'o2210;
       (1 << FSGNJ_D):   reg_state = 12'o2220;
       (1 << FSGNJN_D):  reg_state = 12'o2220;
@@ -654,7 +655,7 @@ module rv64g_instr_decoder_tb;
 
   // set register requirement
   always_comb begin : reg_req
-    if (exp_cmd_o.jump) exp_cmd_o.reg_req = '1;
+    if (exp_cmd_o.blocking) exp_cmd_o.reg_req = '1;
     else begin
       exp_cmd_o.reg_req = '0;
       exp_cmd_o.reg_req[exp_cmd_o.rd] = 1'b1;
@@ -743,7 +744,7 @@ module rv64g_instr_decoder_tb;
     rs1_ok      = 1;
     rs2_ok      = 1;
     rs3_ok      = 1;
-    jump_ok     = 1;
+    blocking_ok = 1;
     imm_ok      = 1;
     reg_req_ok  = 1;
 
@@ -753,7 +754,7 @@ module rv64g_instr_decoder_tb;
     tx_rs1      = 0;
     tx_rs2      = 0;
     tx_rs3      = 0;
-    tx_jump     = 0;
+    tx_blocking = 0;
     tx_imm      = 0;
     tx_reg_req  = 0;
 
@@ -777,7 +778,7 @@ module rv64g_instr_decoder_tb;
           `RV64G_INSTR_DECODER_TB_MON_CHECK(rs1)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(rs2)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(rs3)
-          `RV64G_INSTR_DECODER_TB_MON_CHECK(jump)
+          `RV64G_INSTR_DECODER_TB_MON_CHECK(blocking)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(imm)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(reg_req)
           $display();
@@ -788,12 +789,10 @@ module rv64g_instr_decoder_tb;
           tx_rs1++;
           tx_rs2++;
           tx_rs3++;
-          tx_jump++;
+          tx_blocking++;
           tx_imm++;
           tx_reg_req++;
-          instr_check[$clog2(cmd_o.func)] = 1'b1;
-          count = sum_of_packed_array(instr_check);
-          if (count == NumInstr)->e_all_instr_checked;
+          hit_count[$clog2(exp_cmd_o.func)]++;
         end
       end
     join_none
@@ -805,18 +804,10 @@ module rv64g_instr_decoder_tb;
       forever begin
         @(posedge clk_i);
         pc_i   <= $urandom;
-        code_i <= $urandom;
+        code_i <= $urandom | 3;
       end
     join_none
   endtask
-
-  function automatic int sum_of_packed_array(logic [255:0] packed_array);
-    int sum = 0;
-    foreach (packed_array[i]) begin
-      if (packed_array[i]) sum++;
-    end
-    return sum;
-  endfunction
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-PROCEDURALS
@@ -824,27 +815,39 @@ module rv64g_instr_decoder_tb;
 
   // Initial block to handle fatal timeout
   initial begin
-    repeat (100) @(posedge clk_i);
+    automatic bit keep_going = 1;
+    func_t instr;
+    while (keep_going) begin
+      repeat (5000) @(posedge clk_i);
+      $write("\033[1;33m%0t Remaining:\033[0m", $realtime);
+      keep_going = 0;
+      foreach (hit_count[i])
+      if (hit_count[i] == 0) begin
+        keep_going = 1;
+        instr = func_t'(i);
+        $write(" %s", instr.name);
+      end
+      $display("\n");
+    end
+
     $display("Success_pc             %d", tx_pc);
     $display("Success_func           %d", tx_func);
     $display("Success_rd             %d", tx_rd);
     $display("Success_rs1            %d", tx_rs1);
     $display("Success_rs2            %d", tx_rs2);
     $display("Success_rs3            %d", tx_rs3);
-    $display("Success_jump           %d", tx_jump);
+    $display("Success_blocking       %d", tx_blocking);
     $display("Success_imm            %d", tx_imm);
     $display("Success_reg_req        %d", tx_reg_req);
-    $display("Instructions Verified: %d", count);
     $display("Total runs:            %d", tx_all);
 
-    if (count != NumInstr) result_print(0, "FATAL TIMEOUT");
     result_print(pc_ok, "PC read check");
     result_print(func_ok, "FUNC read check");
     result_print(rd_ok, "RD read check");
     result_print(rs1_ok, "RS1 read check");
     result_print(rs2_ok, "RS2 read check");
     result_print(rs3_ok, "RS3 read check");
-    result_print(jump_ok, "JUMP read check");
+    result_print(blocking_ok, "BLOCKING read check");
     result_print(imm_ok, "IMM read check");
     result_print(reg_req_ok, "REG_REQ read check");
     $finish;
