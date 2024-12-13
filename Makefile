@@ -112,6 +112,9 @@ source/$(RTL).sv:
 .PHONY: simulate
 simulate: print_logo soft_clean xvlog xelab xsim print_logo
 
+.PHONY: gui_simulate
+gui_simulate: print_logo soft_clean xvlog xelab gui_xsim print_logo
+
 .PHONY: rtl_init_sim 
 rtl_init_sim: print_logo soft_clean xvlog init_xelab init_xsim print_logo
 
@@ -151,6 +154,15 @@ ifeq ($(TOP), )
 else
 	@echo -n "$(TOP) $(CONFIG)" > build/config
 	@cd build; xsim $(TOP) --runall --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
+endif
+
+.PHONY: gui_xsim
+gui_xsim: test/$(TOP)/xsim_$(CONFIG)_cfg
+ifeq ($(TOP), )
+	@$(error TOP not set)
+else
+	@echo -n "$(TOP) $(CONFIG)" > build/config
+	@cd build; xsim $(TOP) --gui --nolog
 endif
 
 .PHONY: init_xsim

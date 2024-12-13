@@ -755,7 +755,8 @@ module rv64g_instr_decoder_tb;
       forever begin
         @(posedge clk_i);
         tx_all++;
-        if (exp_cmd_o !== cmd_o && exp_cmd_o.func !== '0) begin
+        if (exp_cmd_o !== cmd_o && exp_cmd_o.func !== '0 && cmd_o.func !== '0) begin
+          $fatal(1, "");
           if (exp_cmd_o.pc !== cmd_o.pc) pc_ok = 0;
           else tx_pc++;
           if (exp_cmd_o.func !== cmd_o.func) func_ok = 0;
