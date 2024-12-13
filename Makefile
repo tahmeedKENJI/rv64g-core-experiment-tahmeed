@@ -21,7 +21,8 @@ help:
 	@echo -e "\033[1;32mmake tb TOP=<top_module_name>\033[0m open new or existing testbench top"
 	@echo -e "\033[1;32mmake rtl RTL=<module_name>\033[0m open new or existing rtl design"
 	@echo -e "\033[1;32mmake schematic RTL=<module_name>\033[0m to generate vivado schematic of the design"
-	@echo -e "\033[1;32mmake simulate TOP=<top_module_name>\033[0m open new or existing rtl design"
+	@echo -e "\033[1;32mmake simulate TOP=<top_module_name>\033[0m to run simulate with cli"
+	@echo -e "\033[1;32mmake gui_simulate TOP=<top_module_name>\033[0m to run simulate with gui"
 	@echo -e "\033[1;32mmake wave\033[0m open dump.vcd from last simulation"
 	@echo -e "\033[1;32mmake lint\033[0m for linting"
 	@echo -e "\033[1;32mmake rtl_init_sim RTL=<module_name>\033[0m to run initial simulate of the rtl"
@@ -136,7 +137,7 @@ xelab:
 ifeq ($(TOP), )
 	@$(error TOP not set)
 else
-	@cd build; xelab $(TOP) -s $(TOP) --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
+	@cd build; xelab $(TOP) -s $(TOP) --debug wave --nolog | tee -a ../log/$(TOP)_$(CONFIG).log
 endif
 
 .PHONY: init_xelab
