@@ -771,7 +771,15 @@ module rv64g_instr_decoder_tb;
           func_t func;
           func = func_t'($clog2(exp_cmd_o.func));
           $display();
-          $display("\033[1;31m[%0t]%s has faults at 0x%08h\033[0m", $realtime, func.name, code_i);
+          $write("\033[1;31m[%0t]%s has faults at 0x%08h\033[0m DUT:", $realtime, func.name,
+                 code_i);
+          foreach (cmd_o.func[i]) begin
+            if (cmd_o.func[i]) begin
+              func = func_t'(i);
+              $write(" %s", func.name);
+            end
+          end
+          $display();
           `RV64G_INSTR_DECODER_TB_MON_CHECK(pc)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(func)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(rd)
@@ -782,6 +790,8 @@ module rv64g_instr_decoder_tb;
           `RV64G_INSTR_DECODER_TB_MON_CHECK(imm)
           `RV64G_INSTR_DECODER_TB_MON_CHECK(reg_req)
           $display();
+          result_print(0, "Test Failed due to fault");
+          $finish;
         end else begin
           tx_pc++;
           tx_func++;
@@ -803,8 +813,169 @@ module rv64g_instr_decoder_tb;
     fork
       forever begin
         @(posedge clk_i);
-        pc_i   <= $urandom;
-        code_i <= $urandom | 3;
+        pc_i <= $urandom;
+        randcase
+          1: code_i <= (($urandom & 'hFFFFFF80) | 'h00000037);  // LUI
+          1: code_i <= (($urandom & 'hFFFFFF80) | 'h00000017);  // AUIPC
+          1: code_i <= (($urandom & 'hFFFFFF80) | 'h0000006F);  // JAL
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00000067);  // JALR
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00000063);  // BEQ
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00001063);  // BNE
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00004063);  // BLT
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00005063);  // BGE
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00006063);  // BLTU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00007063);  // BGEU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00000003);  // LB
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00001003);  // LH
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00002003);  // LW
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00004003);  // LBU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00005003);  // LHU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00000023);  // SB
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00001023);  // SH
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00002023);  // SW
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00000013);  // ADDI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00002013);  // SLTI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00003013);  // SLTIU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00004013);  // XORI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00006013);  // ORI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00007013);  // ANDI
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00000033);  // ADD
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h40000033);  // SUB
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00001033);  // SLL
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00002033);  // SLT
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00003033);  // SLTU
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00004033);  // XOR
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00005033);  // SRL
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h40005033);  // SRA
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00006033);  // OR
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h00007033);  // AND
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h0000000F);  // FENCE
+          1: code_i <= (($urandom & 'h00000000) | 'h8330000F);  // FENCE_TSO
+          1: code_i <= (($urandom & 'h00000000) | 'h0100000F);  // PAUSE
+          1: code_i <= (($urandom & 'h00000000) | 'h00000073);  // ECALL
+          1: code_i <= (($urandom & 'h00000000) | 'h00100073);  // EBREAK
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00006003);  // LWU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00003003);  // LD
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00003023);  // SD
+          1: code_i <= (($urandom & 'h03FF8F80) | 'h00001013);  // SLLI
+          1: code_i <= (($urandom & 'h03FF8F80) | 'h00005013);  // SRLI
+          1: code_i <= (($urandom & 'h03FF8F80) | 'h40005013);  // SRAI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h0000001B);  // ADDIW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0000101B);  // SLLIW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0000501B);  // SRLIW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h4000501B);  // SRAIW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0000003B);  // ADDW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h4000003B);  // SUBW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0000103B);  // SLLW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0000503B);  // SRLW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h4000503B);  // SRAW
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00001073);  // CSRRW
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00002073);  // CSRRS
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00003073);  // CSRRC
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00005073);  // CSRRWI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00006073);  // CSRRSI
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00007073);  // CSRRCI
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02000033);  // MUL
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02001033);  // MULH
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02002033);  // MULHSU
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02003033);  // MULHU
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02004033);  // DIV
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02005033);  // DIVU
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02006033);  // REM
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h02007033);  // REMU
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0200003B);  // MULW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0200403B);  // DIVW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0200503B);  // DIVUW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0200603B);  // REMW
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h0200703B);  // REMUW
+          1: code_i <= (($urandom & 'h060F8F80) | 'h1000202F);  // LR_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h1800202F);  // SC_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h0800202F);  // AMOSWAP_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h0000202F);  // AMOADD_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h2000202F);  // AMOXOR_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h6000202F);  // AMOAND_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h4000202F);  // AMOOR_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h8000202F);  // AMOMIN_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'hA000202F);  // AMOMAX_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'hC000202F);  // AMOMINU_W
+          1: code_i <= (($urandom & 'h07FF8F80) | 'hE000202F);  // AMOMAXU_W
+          1: code_i <= (($urandom & 'h060F8F80) | 'h1000302F);  // LR_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h1800302F);  // SC_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h0800302F);  // AMOSWAP_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h0000302F);  // AMOADD_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h2000302F);  // AMOXOR_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h6000302F);  // AMOAND_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h4000302F);  // AMOOR_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'h8000302F);  // AMOMIN_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'hA000302F);  // AMOMAX_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'hC000302F);  // AMOMINU_D
+          1: code_i <= (($urandom & 'h07FF8F80) | 'hE000302F);  // AMOMAXU_D
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00002007);  // FLW
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00002027);  // FSW
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h00000043);  // FMADD_S
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h00000047);  // FMSUB_S
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h0000004B);  // FNMSUB_S
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h0000004F);  // FNMADD_S
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h00000053);  // FADD_S
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h08000053);  // FSUB_S
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h10000053);  // FMUL_S
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h18000053);  // FDIV_S
+          1: code_i <= (($urandom & 'h000FFF80) | 'h58000053);  // FSQRT_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h20000053);  // FSGNJ_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h20001053);  // FSGNJN_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h20002053);  // FSGNJX_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h28000053);  // FMIN_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h28001053);  // FMAX_S
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC0000053);  // FCVT_W_S
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC0100053);  // FCVT_WU_S
+          1: code_i <= (($urandom & 'h000F8F80) | 'hE0000053);  // FMV_X_W
+          1: code_i <= (($urandom & 'h01FF8F80) | 'hA0002053);  // FEQ_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'hA0001053);  // FLT_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'hA0000053);  // FLE_S
+          1: code_i <= (($urandom & 'h000F8F80) | 'hE0001053);  // FCLASS_S
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD0000053);  // FCVT_S_W
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD0100053);  // FCVT_S_WU
+          1: code_i <= (($urandom & 'h000F8F80) | 'hF0000053);  // FMV_W_X
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC0200053);  // FCVT_L_S
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC0300053);  // FCVT_LU_S
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD0200053);  // FCVT_S_L
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD0300053);  // FCVT_S_LU
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00003007);  // FLD
+          1: code_i <= (($urandom & 'hFFFF8F80) | 'h00003027);  // FSD
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h02000043);  // FMADD_D
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h02000047);  // FMSUB_D
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h0200004B);  // FNMSUB_D
+          1: code_i <= (($urandom & 'hF9FFFF80) | 'h0200004F);  // FNMADD_D
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h02000053);  // FADD_D
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h0A000053);  // FSUB_D
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h12000053);  // FMUL_D
+          1: code_i <= (($urandom & 'h01FFFF80) | 'h1A000053);  // FDIV_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'h5A000053);  // FSQRT_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h22000053);  // FSGNJ_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h22001053);  // FSGNJN_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h22002053);  // FSGNJX_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h2A000053);  // FMIN_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'h2A001053);  // FMAX_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'h40100053);  // FCVT_S_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'h42000053);  // FCVT_D_S
+          1: code_i <= (($urandom & 'h01FF8F80) | 'hA2002053);  // FEQ_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'hA2001053);  // FLT_D
+          1: code_i <= (($urandom & 'h01FF8F80) | 'hA2000053);  // FLE_D
+          1: code_i <= (($urandom & 'h000F8F80) | 'hE2001053);  // FCLASS_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC2000053);  // FCVT_W_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC2100053);  // FCVT_WU_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD2000053);  // FCVT_D_W
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD2100053);  // FCVT_D_WU
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC2200053);  // FCVT_L_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'hC2300053);  // FCVT_LU_D
+          1: code_i <= (($urandom & 'h000F8F80) | 'hE2000053);  // FMV_X_D
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD2200053);  // FCVT_D_L
+          1: code_i <= (($urandom & 'h000FFF80) | 'hD2300053);  // FCVT_D_LU
+          1: code_i <= (($urandom & 'h000F8F80) | 'hF2000053);  // FMV_D_X
+          1: code_i <= (($urandom & 'h00000000) | 'h30200073);  // MRET
+          1: code_i <= (($urandom & 'h00000000) | 'h10500073);  // WFI
+          1: code_i <= (($urandom & 'hFFFFFFFF) | 'h00000000);  // Random
+        endcase
       end
     join_none
   endtask
@@ -822,7 +993,7 @@ module rv64g_instr_decoder_tb;
       $write("\033[1;33m%0t Remaining:\033[0m", $realtime);
       keep_going = 0;
       foreach (hit_count[i])
-      if (hit_count[i] == 0) begin
+      if (hit_count[i] < 100) begin
         keep_going = 1;
         instr = func_t'(i);
         $write(" %s", instr.name);
