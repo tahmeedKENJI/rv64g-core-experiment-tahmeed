@@ -51,8 +51,8 @@ module n_bit_ripple_carry_adder_tb;
   int add_success;
   int sub_success;
   int total_op;
-  event add_failed;
-  event sub_failed;
+  logic add_failed_n;
+  logic sub_failed_n;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-RTLS
@@ -88,9 +88,11 @@ module n_bit_ripple_carry_adder_tb;
   endtask
 
   task automatic start_in_out_monitor();
-    add_success = '0;
-    sub_success = '0;
-    total_op    = '0;
+    add_success  = '0;
+    sub_success  = '0;
+    total_op     = '0;
+    add_failed_n = '1;
+    sub_failed_n = '1;
     fork
       begin
         forever begin
@@ -101,25 +103,18 @@ module n_bit_ripple_carry_adder_tb;
               exp_sum <= temp_sum[BIT_NUM-1:0];
               exp_carry <= temp_sum[BIT_NUM];
               if ((carry_o === exp_carry) && (sum === exp_sum)) add_success++;
-              else begin
-                ->add_failed;
-              end
+              else add_failed_n <= 0;
             end
             else if (sgn_op2 && op1 > op2)  begin
               exp_sum <= op1 - op2;
               if (sum === exp_sum) sub_success++;
-              else begin
-                ->sub_failed;
-              end
+              else sub_failed_n <= 0;
             end
           end
         end
       end
     join_none
   endtask
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //-SEQUENTIALS
-  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-PROCEDURALS
@@ -133,6 +128,8 @@ module n_bit_ripple_carry_adder_tb;
 
   initial begin
     repeat (10) @(posedge clk_i);
+    result_print(add_failed_n, "SUCCESSFUL ADDITION");
+    result_print(sub_failed_n, "SUCCESSFUL SUBTRACTION");
     $finish;
   end
 
