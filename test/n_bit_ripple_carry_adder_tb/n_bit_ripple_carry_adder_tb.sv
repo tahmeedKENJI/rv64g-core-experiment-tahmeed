@@ -98,17 +98,28 @@ module n_bit_ripple_carry_adder_tb;
         forever begin
           @(posedge clk_i);
           if(op1 !== 'x && op2 !== 'x) begin
+            total_op++;
             if (!sgn_op2) begin
-              temp_sum <= op1 + op2;
-              exp_sum <= temp_sum[BIT_NUM-1:0];
-              exp_carry <= temp_sum[BIT_NUM];
+              temp_sum = op1 + op2;
+              // $write("op1:  %03d\t", op1);
+              // $write("op2:  %03d\t", op2);
+              // $write("sign: 0b%b\n", sgn_op2);
+              // $write("sum:  %03d\n", {carry_o, sum});
+              // $write("temp_sum:  %03d\n\n", temp_sum);
+              exp_sum = temp_sum[BIT_NUM-1:0];
+              exp_carry = temp_sum[BIT_NUM];
               if ((carry_o === exp_carry) && (sum === exp_sum)) add_success++;
-              else add_failed_n <= 0;
+              else add_failed_n = 0;
             end
             else if (sgn_op2 && op1 > op2)  begin
-              exp_sum <= op1 - op2;
+              exp_sum = op1 - op2;
+              // $write("op1:  %03d\t", op1);
+              // $write("op2:  %03d\t", op2);
+              // $write("sign: 0b%b\n", sgn_op2);
+              // $write("sum:  %03d\n", sum);
+              // $write("exp_sum:  %03d\n\n", exp_sum);
               if (sum === exp_sum) sub_success++;
-              else sub_failed_n <= 0;
+              else sub_failed_n = 0;
             end
           end
         end
@@ -127,7 +138,8 @@ module n_bit_ripple_carry_adder_tb;
   end
 
   initial begin
-    repeat (10) @(posedge clk_i);
+    repeat (100001) @(posedge clk_i);
+    $write("total runs: %0d\n", total_op);
     result_print(add_failed_n, "SUCCESSFUL ADDITION");
     result_print(sub_failed_n, "SUCCESSFUL SUBTRACTION");
     $finish;
