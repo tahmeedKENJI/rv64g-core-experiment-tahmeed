@@ -5,7 +5,7 @@
 <polygon points="10,95 10,85 30,85 40,95 60,95 40,95 30,105 10,105 10,95"/>
 <text x="65" y="85" dominant-baseline="hanging" text-anchor="start" font-size="20" style="fill:black;stroke:black;stroke-width:0">pl_valid_i</text>
 <polygon points="10,195 10,185 30,185 40,195 60,195 40,195 30,205 10,205 10,195"/>
-<text x="65" y="185" dominant-baseline="hanging" text-anchor="start" font-size="20" style="fill:black;stroke:black;stroke-width:0">jump_i</text>
+<text x="65" y="185" dominant-baseline="hanging" text-anchor="start" font-size="20" style="fill:black;stroke:black;stroke-width:0">blocking_i</text>
 <polygon points="10,245 10,235 30,235 40,245 60,245 40,245 30,255 10,255 10,245"/>
 <text x="65" y="235" dominant-baseline="hanging" text-anchor="start" font-size="20" style="fill:black;stroke:black;stroke-width:0">rd_i</text>
 <polygon points="10,295 10,285 30,285 40,295 60,295 40,295 30,305 10,305 10,295"/>
