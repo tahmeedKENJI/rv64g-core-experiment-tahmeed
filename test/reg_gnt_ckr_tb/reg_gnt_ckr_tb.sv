@@ -40,7 +40,7 @@ module reg_gnt_ckr_tb;
 
   // RTL Input
   logic pl_valid_i;  // pipeline instruction validity
-  logic jump_i;  // if 1, lock all registers
+  logic blocking_i;  // if 1, lock all registers
   logicLogNR rd_i;  // destination register index
   logicNR reg_req_i;  // instruction source register requirement
   logicNR locks_i;  // register locking status input
@@ -54,7 +54,7 @@ module reg_gnt_ckr_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   int outage_counter;
-  event jump_violation;
+  event blocking_violation;
   event arb_violation[2];
   event rd_locking_violation;
   event end_of_simulation;
@@ -68,7 +68,7 @@ module reg_gnt_ckr_tb;
       .NR(NR)
   ) urgckr_1 (
       .pl_valid_i,
-      .jump_i,
+      .blocking_i,
       .rd_i,
       .reg_req_i,
       .locks_i,
@@ -85,7 +85,7 @@ module reg_gnt_ckr_tb;
       forever begin
         @(posedge clk_i);
         pl_valid_i <= $urandom_range(0, 99) > 10;  // 10% instruction outage prob.
-        jump_i     <= $urandom_range(0, 99) < 10;  // 10% jump calls
+        blocking_i <= $urandom_range(0, 99) < 10;  // 10% blocking calls
         rd_i       <= $urandom;
         reg_req_i  <= 1 << $urandom_range(0, NR - 1) | 1 << $urandom_range(0, NR - 1);
         locks_i    <= $urandom;
@@ -98,18 +98,13 @@ module reg_gnt_ckr_tb;
     fork
       forever begin
         @(posedge clk_i);
-        // $write("reg_req_i: 0b%b\n", reg_req_i);
-        // $write("locks_i: 0b%b\n", locks_i);
-        // $write("rd_i: %03d\t pl_valid_i: 0b%b\t jump_i: 0b%b\n", rd_i, pl_valid_i, jump_i);
-        // $write("locks_o: 0b%b\t", locks_o);
-        // $write("arb_req_o: 0b%b\n\n", arb_req_o);
 
         if (~pl_valid_i) begin
           if (arb_req_o)->arb_violation[0];
           else outage_counter++;
         end else begin
-          if (jump_i) begin
-            if (~(&locks_o))->jump_violation;
+          if (blocking_i) begin
+            if (~(&locks_o))->blocking_violation;
           end
           if (|(reg_req_i & locks_i)) begin
             if (arb_req_o)->arb_violation[1];
@@ -141,11 +136,11 @@ module reg_gnt_ckr_tb;
     end
     fork
       begin
-        @(jump_violation);
-        $write("[%.3t] jump case violation\n", $realtime);
+        @(blocking_violation);
+        $write("[%.3t] blocking case violation\n", $realtime);
         $write("reg_req_i: 0b%b\n", reg_req_i);
         $write("locks_i: 0b%b\n", locks_i);
-        $write("rd_i: %03d\t pl_valid_i: 0b%b\t jump_i: 0b%b\n", rd_i, pl_valid_i, jump_i);
+        $write("rd_i: %03d\t pl_valid_i: 0b%b\t blocking_i: 0b%b\n", rd_i, pl_valid_i, blocking_i);
         $write("locks_o: 0b%b\t", locks_o);
         $write("arb_req_o: 0b%b\n\n", arb_req_o);
         violation_state[0] = 'b0;
@@ -155,7 +150,7 @@ module reg_gnt_ckr_tb;
         $write("[%.3t] Outage Arbitration violation\n", $realtime);
         $write("reg_req_i: 0b%b\n", reg_req_i);
         $write("locks_i: 0b%b\n", locks_i);
-        $write("rd_i: %03d\t pl_valid_i: 0b%b\t jump_i: 0b%b\n", rd_i, pl_valid_i, jump_i);
+        $write("rd_i: %03d\t pl_valid_i: 0b%b\t blocking_i: 0b%b\n", rd_i, pl_valid_i, blocking_i);
         $write("locks_o: 0b%b\t", locks_o);
         $write("arb_req_o: 0b%b\n\n", arb_req_o);
         violation_state[1] = 'b0;
@@ -165,7 +160,7 @@ module reg_gnt_ckr_tb;
         $write("[%.3t] Locked Arbitration violation\n", $realtime);
         $write("reg_req_i: 0b%b\n", reg_req_i);
         $write("locks_i: 0b%b\n", locks_i);
-        $write("rd_i: %03d\t pl_valid_i: 0b%b\t jump_i: 0b%b\n", rd_i, pl_valid_i, jump_i);
+        $write("rd_i: %03d\t pl_valid_i: 0b%b\t blocking_i: 0b%b\n", rd_i, pl_valid_i, blocking_i);
         $write("locks_o: 0b%b\t", locks_o);
         $write("arb_req_o: 0b%b\n\n", arb_req_o);
         violation_state[2] = 'b0;
@@ -175,7 +170,7 @@ module reg_gnt_ckr_tb;
         $write("[%.3t] Rd Locking violation\n", $realtime);
         $write("reg_req_i: 0b%b\n", reg_req_i);
         $write("locks_i: 0b%b\n", locks_i);
-        $write("rd_i: %03d\t pl_valid_i: 0b%b\t jump_i: 0b%b\n", rd_i, pl_valid_i, jump_i);
+        $write("rd_i: %03d\t pl_valid_i: 0b%b\t blocking_i: 0b%b\n", rd_i, pl_valid_i, blocking_i);
         $write("locks_o: 0b%b\t", locks_o);
         $write("arb_req_o: 0b%b\n\n", arb_req_o);
         violation_state[3] = 'b0;
@@ -185,7 +180,7 @@ module reg_gnt_ckr_tb;
 
   initial begin
     @(end_of_simulation);
-    result_print(violation_state[0], "Jump Condition Violation Check");
+    result_print(violation_state[0], "Blocking Condition Violation Check");
     result_print(violation_state[1], "Arbitration During Outage Check");
     result_print(violation_state[2], "Arbitration Of Locked Registers Check");
     result_print(violation_state[3], "Destination Register Locking Check");

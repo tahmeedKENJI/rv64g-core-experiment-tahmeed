@@ -15,7 +15,8 @@ This module is mean to decode instruction into the decoded_instr_t as mentioned 
 - The `imm` has multi-purpose such signed/unsigned immediate, shift, csr_addr, etc. based on the
   `func`.
 - The `pc` hold's the physical address of the current instruction.
-- The `jump` field is set high when the current instruction can cause branch/jump.
+- The `blocking` field is set high when the current instruction must block next instructions from
+  execution.
 - The `reg_req` field is a flag that indicates the registers that are required for the current
   instruction
 

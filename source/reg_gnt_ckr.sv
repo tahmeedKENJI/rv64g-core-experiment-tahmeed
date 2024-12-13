@@ -17,8 +17,8 @@ module reg_gnt_ckr #(
     // 1 for valid instruction from pipeline.
     input logic pl_valid_i,
 
-    // For jump instructions. If 1, lock all registers.
-    input logic                  jump_i,
+    // For blocking instructions. If 1, lock all registers.
+    input logic                  blocking_i,
     // Index of destination register.
     input logic [$clog2(NR)-1:0] rd_i,
     // Has 1s at the bits indicating required source registers by the current instruction.
@@ -26,7 +26,7 @@ module reg_gnt_ckr #(
 
     // Input of locked registers.
     input  logic [NR-1:0] locks_i,
-    // Output of locked registers. Note that when jump_i = 0, rd_i = 0 register can never be locked
+    // Output of locked registers. Note that when blocking_i = 0, rd_i = 0 register can never be locked
     // (only exception) - otherwise lock register indicated by rd_i.
     output logic [NR-1:0] locks_o,
 
@@ -46,7 +46,7 @@ module reg_gnt_ckr #(
     locks_mask = '0;
     locks_o = locks_i;
     if (pl_valid_i) begin
-      if (jump_i) begin
+      if (blocking_i) begin
         locks_o = '1;
       end else begin
         locks_mask[rd_i] = |rd_i;

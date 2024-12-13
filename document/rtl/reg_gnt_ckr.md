@@ -24,9 +24,9 @@ requirements of instructions being executed.
 |Name|Direction|Type|Dimension|Description|
 |-|-|-|-|-|
 |pl_valid_i|input|logic|| 1 for valid instruction from pipeline.|
-|jump_i|input|logic|| For jump instructions. If 1, lock all registers.|
+|blocking_i|input|logic|| For blocking instructions. If 1, lock all registers.|
 |rd_i|input|logic [$clog2(NR)-1:0]|| Index of destination register.|
 |reg_req_i|input|logic [ NR-1:0]|| Has 1s at the bits indicating required source registers by the current instruction.|
 |locks_i|input|logic [NR-1:0]|| Input of locked registers.|
-|locks_o|output|logic [NR-1:0]|| Output of locked registers. Note that when jump_i = 0, rd_i = 0 register can never be locked (only exception) - otherwise lock register indicated by rd_i.|
+|locks_o|output|logic [NR-1:0]|| Output of locked registers. Note that when blocking_i = 0, rd_i = 0 register can never be locked (only exception) - otherwise lock register indicated by rd_i.|
 |arb_req_o|output|logic|| 0/1 to arbiter based on locks_i and source registers required (all required source registers must be un-locked to "pass").|
