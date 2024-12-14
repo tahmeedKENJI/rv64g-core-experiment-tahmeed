@@ -37,11 +37,13 @@ module tmd_branch_target_buffer #(
 
   logic [127:0][XLEN-1:2] c_addr_buffer;
   logic [127:0][XLEN-1:2] n_addr_buffer;
-  logic [127:0]           valid_n        ;
+  logic [127:0]           valid        ;
 
   logic wr_en; // write enable
   logic [$clog2(128)-1:0] wr_select;  // write demux selector
-  logic buffer_full;
+  logic buffer_full_n;
+  logic need_write;
+  logic now_write;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //-ASSIGNMENTS
@@ -54,9 +56,17 @@ module tmd_branch_target_buffer #(
   priority_encoder #(
     .NUM_WIRE(128)
   ) u_pe_1 (
-    .wire_in(valid_n),
+    .wire_in(~valid),
     .index_o(wr_select),
-    .index_valid_o(buffer_full)
+    .index_valid_o(buffer_full_n)
+  );
+
+  demultiplexer #(
+    .OUT_LEN(128)
+  ) u_dmx_1 (
+    .data_i(need_write),
+    .select_i(wr_select),
+    .wire_o(now_write)
   );
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +83,7 @@ module tmd_branch_target_buffer #(
       n_addr_buffer <= '0;
       valid         <= '0;
     end else begin
-      
+      if (now_write & buffer_full_n) valid[] <= '1;
     end
   end
 
