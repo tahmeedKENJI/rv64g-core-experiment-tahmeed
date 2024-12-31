@@ -4,3 +4,6 @@
 [submodule "submodules/documenter"]
 	path = submodules/documenter
 	url = https://github.com/squared-studio/documenter.git
+[submodule "submodules/n_bit_ripple_carry_adder-core"]
+	path = submodules/n_bit_ripple_carry_adder-core
+	url = https://github.com/tahmeedKENJI/n_bit_ripple_carry_adder-core.git
