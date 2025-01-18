@@ -105,15 +105,15 @@ module pipeline_lite_tb;
     fork
       forever begin
         @(posedge clk_i);
-        $write("[%.3t]\n", $realtime);
+        // $write("[%.3t]\n", $realtime);
+        // // $write("\n");
+        // // $write("clear_i:          0b%b\n", clear_i);
+        // $write("data_in_i:          %03d\n", data_in_i);
+        // $write("data_in_valid_i:  0b%b\n", data_in_valid_i);
+        // $write("data_in_ready_o:  0b%b\n", data_in_ready_o);
+        // $write("data_out_valid_o: 0b%b\n", data_out_valid_o);
+        // $write("data_out_ready_i: 0b%b\n", data_out_ready_i);
         // $write("\n");
-        // $write("clear_i:          0b%b\n", clear_i);
-        $write("data_in_i:          %03d\n", data_in_i);
-        $write("data_in_valid_i:  0b%b\n", data_in_valid_i);
-        $write("data_in_ready_o:  0b%b\n", data_in_ready_o);
-        $write("data_out_valid_o: 0b%b\n", data_out_valid_o);
-        $write("data_out_ready_i: 0b%b\n", data_out_ready_i);
-        $write("\n");
 
         if (arst_ni & ~clear_i) begin
           if (data_out_valid_o & data_out_ready_i) begin
@@ -125,11 +125,11 @@ module pipeline_lite_tb;
             buffer_clear_flag <= '0;
           end
         end
-        $write("data_buffer:        %03d\n", data_buffer);
-        $write("ex_data_out:        %03d\n", ex_data_out);
-        $write("data_out_o:         %03d\n", data_out_o);
-        $write("buffer_clear_flag: 0b%b\n", buffer_clear_flag);
-        $write("\n");
+        // $write("data_buffer:        %03d\n", data_buffer);
+        // $write("ex_data_out:        %03d\n", ex_data_out);
+        // $write("data_out_o:         %03d\n", data_out_o);
+        // $write("buffer_clear_flag: 0b%b\n", buffer_clear_flag);
+        // $write("\n");
       end
     join_none
   endtask
@@ -150,7 +150,7 @@ module pipeline_lite_tb;
   end
 
   initial begin
-    repeat (20) @(posedge clk_i);
+    repeat (100) @(posedge clk_i);
     $finish;
   end
 

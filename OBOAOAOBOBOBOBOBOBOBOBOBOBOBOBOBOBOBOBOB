@@ -1,0 +1,467 @@
+[33mcommit 80baf3602c51d8482c104852c5a2212f0f2f25a5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mexp_btb[m[33m)[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Sun Jan 19 04:24:42 2025 +0600
+
+    Added: Pipeline Lite
+
+[33mcommit d4fab519c090c3a5a627098226d36beaed64a7aa[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Tue Dec 31 16:24:51 2024 +0600
+
+    Submodule: nBRCA
+
+[33mcommit 2288e5dedeaf330315599e80d5b055889b883499[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Sat Dec 14 12:42:00 2024 +0600
+
+    added drawio btb
+    new file:   document/instr_fetch_tahmeed.drawio
+
+[33mcommit 719d428debe3127604a30393d00cd274d9bf93bc[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Sat Dec 14 12:25:09 2024 +0600
+
+    ... crying on btb tb
+    modified:   source/tmd_branch_target_buffer.sv
+
+[33mcommit dfdd91975c437c8b3687923625a0c3bae18e89ed[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Sat Dec 14 09:31:23 2024 +0600
+
+    ... tmd btb
+    new file:   source/demultiplexer.sv
+    modified:   source/tmd_branch_target_buffer.sv
+    new file:   test/demultiplexer_tb/demultiplexer_tb.sv
+    new file:   test/demultiplexer_tb/xsim_default_cfg
+
+[33mcommit c73b80eb70b4d6978025bba5f7f8bc33030bafe1[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 23:29:36 2024 +0600
+
+    my gawd
+    modified:   source/tmd_branch_target_buffer.sv
+
+[33mcommit 6a8149697fd7a5ede6ac0e1d7e7b26deb311effb[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 22:59:09 2024 +0600
+
+    12/13/2024 11:00pm
+    new file:   source/tmd_branch_target_buffer.sv
+
+[33mcommit 1176218262bd499a3247aef018d268e2c14bf6ef[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 93f354b 668a23f
+Author: tahmeedKENJI <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 22:35:17 2024 +0600
+
+    Merge branch 'DSi-DV:main' into main
+
+[33mcommit 668a23fb98285d5b97c71c31ecce79a346a8de95[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 13 21:12:38 2024 +0600
+
+    modified:   document/march.svg
+    modified:   document/rtl/reg_gnt_ckr.md
+    modified:   document/rtl/reg_gnt_ckr_top.svg
+    modified:   source/reg_gnt_ckr.sv
+    modified:   source/rv64g_instr_launcher.sv
+    modified:   test/reg_gnt_ckr_tb/reg_gnt_ckr_tb.sv
+    modified:   test/rv64g_instr_launcher_tb/rv64g_instr_launcher_tb.sv
+
+[33mcommit 3a0b2ef6f252101c40bfa7816e78beb8a0b8e9ff[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 13 20:53:45 2024 +0600
+
+    modified:   ci.sh
+    new file:   test/decoder_no_valid_tb/decoder_no_valid_tb.sv
+    new file:   test/decoder_no_valid_tb/xsim_default_cfg
+
+[33mcommit 44b34fb783fe131b3b263d2d157124339658c156[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 13 20:51:55 2024 +0600
+
+    modified:   document/raw_instr.md
+    modified:   document/rtl/rv64g_instr_decoder.md
+    modified:   document/supported_instructions.md
+    modified:   include/rv64g_pkg.sv
+    modified:   source/rv64g_instr_decoder.sv
+    modified:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+
+[33mcommit ec25eb5f578abdfab1b1fdd65914bf0705537a75[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 13 20:33:52 2024 +0600
+
+    modified:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+
+[33mcommit 65739aea8bbe926a1c8f1537ca40791cdbe17a83[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 13 19:30:05 2024 +0600
+
+    modified:   ci.sh
+    modified:   include/rv64g_pkg.sv
+    modified:   source/rv64g_instr_decoder.sv
+    modified:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+
+[33mcommit 5b3fa0609cb43a0f89cb6d4e7ef6413e03528c0d[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 13 18:20:31 2024 +0600
+
+    modified:   Makefile
+    deleted:    document/rtl/and_reduction.md
+    deleted:    document/rtl/and_reduction_top.svg
+    modified:   document/rtl/modules.md
+    deleted:    document/rtl/or_reduction.md
+    deleted:    document/rtl/or_reduction_top.svg
+    deleted:    source/and_reduction.sv
+    deleted:    source/or_reduction.sv
+    modified:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+
+[33mcommit 93f354b976a60fefeabd1332cc406362a63860ab[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 17:27:24 2024 +0600
+
+    n bit ripple carry adder complete
+    modified:   source/n_bit_ripple_carry_adder.sv
+    modified:   test/n_bit_ripple_carry_adder_tb/n_bit_ripple_carry_adder_tb.sv
+
+[33mcommit 78550a8e927658d49d0d044e510e52279e15d657[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 17:04:01 2024 +0600
+
+    12/13/24 5:04pm
+    modified:   test/n_bit_ripple_carry_adder_tb/n_bit_ripple_carry_adder_tb.sv
+
+[33mcommit f64bee3cfe3e9c9a2dc5cfa4245d395b48c86a97[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 16:56:21 2024 +0600
+
+    12/13/24 4:56pm
+    modified:   source/n_bit_ripple_carry_adder.sv
+    modified:   test/n_bit_ripple_carry_adder_tb/n_bit_ripple_carry_adder_tb.sv
+
+[33mcommit dc89bf0fb636f1aa7e5bde56b3301761e0aeb3ad[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 16:09:08 2024 +0600
+
+    13/12/2024 4:10pm
+    new file:   source/full_adder.sv
+    new file:   source/half_adder.sv
+    new file:   source/n_bit_ripple_carry_adder.sv
+    new file:   test/n_bit_ripple_carry_adder_tb/n_bit_ripple_carry_adder_tb.sv
+    new file:   test/n_bit_ripple_carry_adder_tb/xsim_default_cfg
+
+[33mcommit d2f77791d2b8f35e809f7fb2721c82934f71da55[m
+Merge: 2a16f2f 3b71fea
+Author: Foez Ahmed <119846826+foez-ahmed@users.noreply.github.com>
+Date:   Fri Dec 13 15:03:50 2024 +0600
+
+    Merge pull request #62 from DSi-DV/57-decoder-performance-improvement
+    
+    57 decoder performance improvement
+
+[33mcommit 3b71feabb2ebe85aaabbab901c3e3b5499a4af52[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Fri Dec 13 13:11:12 2024 +0600
+
+    12/13/2024 1:11pm
+    modified:   Makefile
+    modified:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+
+[33mcommit b529f43036d7c9d77c247bbefa0f773c3ce03734[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 12 23:15:39 2024 +0600
+
+    new file:   document/rtl/decoder_no_valid.md
+    new file:   document/rtl/decoder_no_valid_top.svg
+    modified:   document/rtl/modules.md
+    new file:   source/decoder_no_valid.sv
+
+[33mcommit c5ab9531ee3464f5b880cf61fdfdf13086ecb901[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 12 22:53:11 2024 +0600
+
+    modified:   source/constant_compare.sv
+
+[33mcommit 2a16f2f56e075cb161febece7e2e3140d95c04a4[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 12 23:15:39 2024 +0600
+
+    new file:   document/rtl/decoder_no_valid.md
+    new file:   document/rtl/decoder_no_valid_top.svg
+    modified:   document/rtl/modules.md
+    new file:   source/decoder_no_valid.sv
+
+[33mcommit 20c8055381f3bc1c40b6227f18268af4c4c9585a[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 12 22:53:11 2024 +0600
+
+    modified:   source/constant_compare.sv
+
+[33mcommit c2a9e1c523719c6fcdc352b1d2e785b1e0e45e63[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Thu Dec 12 19:44:52 2024 +0600
+
+    .. 12/12/24 7:45pm
+    modified:   source/rv64g_instr_decoder.sv
+    modified:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+
+[33mcommit cc08cca7d6d3f3e69078225ef623acb2027330fd[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Thu Dec 12 16:36:33 2024 +0600
+
+    new file:   test/rv64g_instr_decoder_tb/rv64g_instr_decoder_tb.sv
+    new file:   test/rv64g_instr_decoder_tb/xsim_default_cfg
+
+[33mcommit 85f956256945fa74a4c367c8db73f905740bade4[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 12 16:33:48 2024 +0600
+
+    modified:   include/rv64g_pkg.sv
+    modified:   source/rv64g_instr_decoder.sv
+
+[33mcommit 0206f74153e2f7a8cfe94e034ad4d3f9ceaca7b0[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 12 13:22:48 2024 +0600
+
+    new file:   document/rtl/rv64g_i64_alu_des.svg
+    modified:   submodules/documenter
+    modified:   submodules/sv-genesis
+
+[33mcommit a9f42b6775c8b3ff4e9e2fe851af8770589e28e7[m
+Merge: 101043e b28e833
+Author: Foez Ahmed <119846826+foez-ahmed@users.noreply.github.com>
+Date:   Thu Dec 12 13:17:40 2024 +0600
+
+    Merge pull request #59 from DSi-DV/55-branch-target-buffer-design
+    
+    Completed BTB. Please review
+
+[33mcommit b28e8332c79ed3fbaab094bc0c3d55ff192379cf[m
+Author: Subhan Zawad Bihan <subhan.bihan@gmail.com>
+Date:   Thu Dec 12 13:14:18 2024 +0600
+
+    Changed
+            modified:   submodules/documenter
+            modified:   submodules/sv-genesis
+
+[33mcommit e95b7938fd2eb9421c5b59175615b725cb11b72d[m
+Author: Subhan Zawad Bihan <subhan.bihan@gmail.com>
+Date:   Thu Dec 12 12:21:47 2024 +0600
+
+    Completed BTB. Please review
+            new file:   document/rtl/branch_target_buffer.md
+            new file:   document/rtl/branch_target_buffer_top.svg
+            modified:   document/rtl/modules.md
+            new file:   source/branch_target_buffer.sv
+            modified:   submodules/documenter
+            modified:   submodules/sv-genesis
+
+[33mcommit 101043e68de4500e068d82a57bce302ad9219411[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Tue Dec 10 23:30:01 2024 +0600
+
+    modified:   ci.sh
+    modified:   document/march.svg
+
+[33mcommit 157c9bfb3b2086d193adf5585cf6fcb47cca48bf[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Tue Dec 10 09:45:56 2024 +0600
+
+    RTL Updated
+    modified:   source/rv64g_regfile.sv
+
+[33mcommit 9fa12c4093a39d9f9ce9191c10b9393249e6c814[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Mon Dec 9 23:25:59 2024 +0600
+
+    issue closing
+    new file:   test/and_reduction_tb/and_reduction_tb.sv
+    new file:   test/and_reduction_tb/xsim_default_cfg
+    new file:   test/constant_compare_tb/constant_compare_tb.sv
+    new file:   test/constant_compare_tb/xsim_default_cfg
+    new file:   test/or_reduction_tb/or_reduction_tb.sv
+    new file:   test/or_reduction_tb/xsim_default_cfg
+
+[33mcommit db45bcdf00dd76d1c913432c8ba0a4d94ac36ac3[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Mon Dec 9 23:13:54 2024 +0600
+
+    new file:   document/rtl/btb_des.svg
+
+[33mcommit 578bf32fd5157d496b1c78386189add57b7264bd[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Sun Dec 8 22:12:03 2024 +0600
+
+    modified:   Makefile
+    modified:   document/raw_instr.md
+    modified:   document/supported_instructions.md
+    modified:   include/rv64g_pkg.sv
+    modified:   source/rv64g_instr_decoder.sv
+
+[33mcommit 35ba388291eebacc19c53e63dd0bfc12d77eafa6[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Sun Dec 8 13:51:45 2024 +0600
+
+    modified:   document/supported_csrs.md
+
+[33mcommit 35e686fae54ae10de42e6c896b0cc604eae99a12[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Sat Dec 7 18:44:48 2024 +0600
+
+    modified:   README.md
+    new file:   document/supported_csrs.md
+
+[33mcommit 3949b8ae23c1ebe5609f10e1372c19b3ce98c5e9[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Sat Dec 7 12:53:49 2024 +0600
+
+    modified:   submodules/documenter
+    modified:   submodules/sv-genesis
+
+[33mcommit 32aa62c536d829d541b1e57ccf0f69c28bd6149a[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Sat Dec 7 12:53:02 2024 +0600
+
+    modified:   README.md
+    modified:   document/march.svg
+
+[33mcommit a991b06e0d35ce8a9ac457a2437b891842e0d5ef[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 19:34:07 2024 +0600
+
+    modified:   README.md
+    new file:   document/rtl/Launcher.gif
+
+[33mcommit deb09d2b17f97de0f245edaf8bf1a2167a451793[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:46:52 2024 +0600
+
+    modified:   source/rv64g_instr_decoder.sv
+
+[33mcommit a393ee25f51d7b3379840b0d22b785a77e1ed177[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:41:18 2024 +0600
+
+    modified:   document/rtl/modules.md
+    deleted:    document/rtl/wrapper_rv64g_instr_decoder.md
+    deleted:    document/rtl/wrapper_rv64g_instr_decoder_top.svg
+
+[33mcommit bd065ae50114a607a4d9cc202e63da9ba0d1d191[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:39:29 2024 +0600
+
+    modified:   document/rtl/constant_compare.md
+    modified:   document/rtl/modules.md
+    new file:   document/rtl/wrapper_rv64g_instr_decoder.md
+    new file:   document/rtl/wrapper_rv64g_instr_decoder_top.svg
+
+[33mcommit c0e664bf05551c1ba131409a081ab9e49beed3cc[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:37:57 2024 +0600
+
+    modified:   source_change_logs
+
+[33mcommit 751158e8d89e211ef4d68004d39ebd723bb262c0[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:37:09 2024 +0600
+
+    modified:   source/constant_compare.sv
+
+[33mcommit 809feba2ed694539c05d137e9b1053df6711cebf[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:33:31 2024 +0600
+
+    modified:   source/constant_compare.sv
+
+[33mcommit 8575b73977443b9a7e942da1a3c221d025119da5[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:03:44 2024 +0600
+
+    modified:   source_change_logs
+
+[33mcommit 0df0ef4eac9d8fc5dceddbb7f70e03ff44e95a59[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:03:15 2024 +0600
+
+    modified:   source/constant_compare.sv
+
+[33mcommit 33963df36c04a8674aaac9569c485938de1b5163[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:01:18 2024 +0600
+
+    modified:   document/rtl/modules.md
+    deleted:    document/rtl/wrapper_rv64g_instr_decoder.md
+    deleted:    document/rtl/wrapper_rv64g_instr_decoder_top.svg
+
+[33mcommit f5599b21f7b5854be08f39ed599a988676c93d85[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 17:00:32 2024 +0600
+
+    deleted:    source/wrapper_rv64g_instr_decoder.sv
+    modified:   source_change_logs
+
+[33mcommit c3cd1bb518e28f8a2f7fbfa7e22e3a3ab4011e8c[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 16:54:57 2024 +0600
+
+    new file:   document/rtl/and_reduction.md
+    new file:   document/rtl/and_reduction_top.svg
+    new file:   document/rtl/constant_compare.md
+    new file:   document/rtl/constant_compare_top.svg
+    modified:   document/rtl/modules.md
+    new file:   document/rtl/or_reduction.md
+    new file:   document/rtl/or_reduction_top.svg
+    new file:   document/rtl/wrapper_rv64g_instr_decoder.md
+    new file:   document/rtl/wrapper_rv64g_instr_decoder_top.svg
+    new file:   source/and_reduction.sv
+    modified:   source/constant_compare.sv
+    new file:   source/or_reduction.sv
+    modified:   source/rv64g_instr_decoder.sv
+    new file:   source/wrapper_rv64g_instr_decoder.sv
+
+[33mcommit 4a54e10edad9c40d0c44df3439a3a060bbf25a97[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Fri Dec 6 16:18:56 2024 +0600
+
+    slack improved 0.961 >> 6.880
+    modified:   Makefile
+    new file:   source/constant_compare.sv
+    modified:   source/rv64g_instr_decoder.sv
+
+[33mcommit dcf0c87b78960fb9172767cb52bb14c07239f7a7[m
+Author: Foez Ahmed <foez.official@gmail.com>
+Date:   Thu Dec 5 22:37:35 2024 +0600
+
+    modified:   source/rv64g_instr_decoder.sv
+
+[33mcommit 1004f7be0da3bc27df91aa4010e7b96e36dee774[m
+Merge: aa5e905 2ae5c2c
+Author: Foez Ahmed <119846826+foez-ahmed@users.noreply.github.com>
+Date:   Thu Dec 5 10:35:23 2024 +0600
+
+    Merge pull request #46 from DSi-DV/14-rv64g_regfile_tb
+    
+    14 rv64g regfile tb
+
+[33mcommit 2ae5c2c093114fc4373cd69714a3dc93e4f236f7[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Thu Dec 5 10:27:55 2024 +0600
+
+    rv64g_regfile_tb: review done
+    modified:   test/rv64g_regfile_tb/rv64g_regfile_tb.sv
+
+[33mcommit d78d83a89e883d7cc7f5f6e1d797b478451b4fd6[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Wed Dec 4 00:08:52 2024 +0600
+
+    rv64g_regfile_tb: additional checks
+    modified:   test/rv64g_regfile_tb/rv64g_regfile_tb.sv
+
+[33mcommit 897f8dd92a79fd12e9c7b322493ecfd4ec1725bc[m
+Author: S. M. Tahmeed Reza <tahmeedreza@gmail.com>
+Date:   Wed Dec 4 00:02:39 2024 +0600
+
+    rv64g_regfile_tb: update 12/4/24 12:03 am
+    modified:   test/rv64g_regfile_tb/rv64g_regfile_tb.sv
+
+[33mcommit 46c74f938593f38dda7e45004b85ca311907c683[m
+Author: Foez Ahmed <foez.official@gmail.com>
