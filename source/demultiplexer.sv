@@ -1,0 +1,28 @@
+/*
+Write a markdown documentation for this systemverilog module:
+Author : S. M. Tahmeed Reza (https://github.com/tahmeedKENJI)
+This file is part of DSInnovators:rv64g-core
+Copyright (c) 2024 DSInnovators
+Licensed under the MIT License
+See LICENSE file in the project root for full license information
+*/
+
+module demultiplexer #(
+    parameter int OUT_LEN = 128
+) (
+    input logic data_i,
+    input logic [$clog2(OUT_LEN)-1:0] select_i,
+    output logic [OUT_LEN-1:0] wire_o
+);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //-SIGNALS
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //-ASSIGNMENTS
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  assign wire_o = data_i << select_i;
+
+endmodule
